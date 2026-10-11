@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="ko"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Save the Earth — 지구 지킴이 탐험대</title>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0d2745;--deep:#0a2a4d;--sky:#4db8ff;--ice:#e8f6ff;--mint:#2fd5a3;--sun:#ffc93c;--coral:#ff6b6b;--line:#16324f}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%}
+body{font-family:"Noto Sans KR",sans-serif;color:var(--ink);background:radial-gradient(1000px 600px at 20% -10%,#1a4a86,transparent 60%),radial-gradient(900px 600px at 100% 10%,#0e6a73,transparent 55%),#071a30;padding:10px}
+button{font:inherit;cursor:pointer;color:inherit}button:disabled{cursor:not-allowed}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.hidden{display:none!important}.wrap{max-width:1000px;margin:auto}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;color:#bcd8f5;font-size:14px}
+.top button{background:#ffffff18;border:1px solid #ffffff44;color:#fff;border-radius:10px;padding:5px 14px}
+.game{position:relative;container-type:inline-size;border-radius:24px;overflow:hidden;background:#0b2a4a;border:2px solid #ffffff33;box-shadow:0 30px 80px #000a;font-size:max(12px,1.55cqw);user-select:none}
+.jua{font-family:Jua,sans-serif;font-weight:400}
+.btn{position:relative;border:0;border-radius:1.6cqw;padding:1cqw 3cqw;font:400 max(14px,2.2cqw) Jua;background:linear-gradient(#ffe07a,#ffb21f);color:#4a2c00;box-shadow:0 .6cqw 0 #c77c00,0 1.2cqw 2cqw #0006;transition:transform .08s}
+.btn:hover:not(:disabled){filter:brightness(1.07)}.btn:active:not(:disabled){transform:translateY(.5cqw);box-shadow:0 .1cqw 0 #c77c00}
+.btn.g{background:linear-gradient(#8bf5cc,#1fc48e);color:#04382a;box-shadow:0 .6cqw 0 #108a63,0 1.2cqw 2cqw #0006}
+.btn.b{background:linear-gradient(#9fdcff,#3ea3f0);color:#052a52;box-shadow:0 .6cqw 0 #1f6fb5,0 1.2cqw 2cqw #0006}
+.btn.r{background:linear-gradient(#ff9d9d,#f05252);color:#4a0000;box-shadow:0 .6cqw 0 #b62b2b}
+.btn.sm{font-size:max(12px,1.7cqw);padding:.6cqw 1.8cqw;box-shadow:0 .4cqw 0 #c77c00}.btn.g.sm{box-shadow:0 .4cqw 0 #108a63}.btn.b.sm{box-shadow:0 .4cqw 0 #1f6fb5}.btn.r.sm{box-shadow:0 .4cqw 0 #b62b2b}
+.btn:disabled{filter:grayscale(.8) brightness(.8);box-shadow:none}
+.glass{background:linear-gradient(#ffffff26,#ffffff10);border:1px solid #ffffff40;backdrop-filter:blur(10px);border-radius:1.8cqw}
+/* hud */
+.hud{display:flex;align-items:center;gap:1cqw;padding:.8cqw 1.6cqw;background:linear-gradient(#0e3763,#0a2a4d);border-bottom:1px solid #ffffff22;color:#fff;font-size:max(11px,1.6cqw);flex-wrap:wrap}
+.chip{background:#ffffff1a;border:1px solid #ffffff33;border-radius:2cqw;padding:.2cqw 1.3cqw;white-space:nowrap}.chip.on{background:#2fd5a333;border-color:#2fd5a3}.sp{flex:1}
+.hud button{background:#ffffff1a;border:1px solid #ffffff44;border-radius:1cqw;color:#fff;padding:.2cqw 1.2cqw;font-size:inherit}
+.cl{opacity:.35;filter:grayscale(1)}.cl.on{opacity:1;filter:none}
+/* screens */
+.scr{position:relative;min-height:56cqw;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:1.6cqw;padding:3cqw;overflow:hidden;color:#fff}
+.pre{background:#06182c}.lbar{width:46cqw;height:3cqw;border-radius:2cqw;background:#ffffff22;overflow:hidden;border:1px solid #fff4}.lbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#4db8ff,#2fd5a3)}
+.blink{animation:bl 1s steps(2) infinite}@keyframes bl{50%{opacity:.35}}
+.menu{background:linear-gradient(#0a2d5a,#1d6fa8 55%,#bfeaff 55.1%,#e9f8ff)}
+.menu .ice{position:absolute;bottom:0;left:0;right:0;height:46%;pointer-events:none}
+.ttl{font:400 8.5cqw Jua;line-height:1;background:linear-gradient(#fff,#a9deff);-webkit-background-clip:text;color:transparent;filter:drop-shadow(0 .6cqw 0 #0b3a6b)}
+.sub{font-size:max(12px,2cqw);color:#d7ecff;max-width:64cqw;line-height:1.6}
+.sel{font:inherit;font-size:max(14px,2.1cqw);border:0;border-radius:1.4cqw;padding:.9cqw 2cqw;background:#fff;color:var(--ink);box-shadow:0 .5cqw 0 #8fb4d4}
+.nori{width:100%;height:100%;display:block;filter:drop-shadow(0 .5cqw .4cqw #0005)}
+.float{animation:fl 3s ease-in-out infinite}@keyframes fl{50%{transform:translateY(-1.2cqw)}}
+/* map */
+.map{background:linear-gradient(#0c3566,#1b6da5);padding:0;display:block;min-height:0}
+.map .board{position:relative;aspect-ratio:16/9}
+.map svg.bgm{position:absolute;inset:0;width:100%;height:100%}
+.node{position:absolute;transform:translate(-50%,-50%);width:17cqw;border:0;padding:1cqw .8cqw;border-radius:2cqw;color:#fff;text-align:center;background:linear-gradient(#ffffff30,#ffffff12),var(--c);border:1px solid #fff7;box-shadow:0 1cqw 2cqw #0007,0 0 3cqw var(--c);display:flex;flex-direction:column;align-items:center;gap:.3cqw;transition:transform .15s}
+.node:hover:not(:disabled){transform:translate(-50%,-54%)}.node .no{font-size:1.5cqw;letter-spacing:.2em;opacity:.9}.node .ic{font-size:6cqw;line-height:1}.node .t{font:400 2cqw Jua}.node .st{font-size:1.5cqw;background:#0007;border-radius:1cqw;padding:0 1cqw}
+.node:disabled{filter:grayscale(1) brightness(.7)}
+.mnori{position:absolute;left:2cqw;bottom:2cqw;display:flex;align-items:flex-end;gap:1.2cqw;max-width:62cqw;z-index:3}
+.mnori .av{width:11cqw;height:11cqw;flex:none}
+.bub{position:relative;background:#fff;color:var(--ink);border-radius:2cqw;padding:1cqw 2cqw;font-size:max(12px,1.9cqw);line-height:1.5;box-shadow:0 .6cqw 1.6cqw #0006}
+.bub::before{content:"";position:absolute;left:-1.2cqw;bottom:2cqw;border:.7cqw solid transparent;border-right:1.4cqw solid #fff}
+/* stage */
+.steps{display:flex;gap:.8cqw;align-items:center;padding:.8cqw 1.6cqw;background:#0a2a4d;color:#9fc3e6;font-size:max(11px,1.5cqw)}
+.steps b{color:#fff;font:400 max(13px,1.9cqw) Jua;margin-right:1cqw}.steps span{padding:.2cqw 1.2cqw;border-radius:2cqw;border:1px solid #ffffff33}.steps span.on{background:var(--sun);color:#4a2c00;border-color:var(--sun);font-weight:700}.steps span.dn{background:#2fd5a333;color:#9ff5d6;border-color:#2fd5a3}
+.vp{position:relative;aspect-ratio:16/9;overflow:hidden;cursor:grab;touch-action:none;background:#000}.vp:active{cursor:grabbing}
+.world{position:absolute;left:0;top:0;height:100%;will-change:transform}.world svg.sc{position:absolute;inset:0;width:100%;height:100%}
+.ob{position:absolute;transform:translate(-50%,-50%);background:none;border:0;padding:0;line-height:1;font-size:calc(var(--s)*1cqw);filter:drop-shadow(0 .3cqw .3cqw #0007);transition:transform .12s}
+.ob:hover{transform:translate(-50%,-50%) scale(1.12)}
+.ob.found{filter:drop-shadow(0 0 1.2cqw #2fd5a3) drop-shadow(0 0 .3cqw #fff);pointer-events:none}
+.ob.found::after{content:"✔";position:absolute;right:-30%;top:-25%;font-size:.45em;background:#2fd5a3;color:#fff;border-radius:50%;width:1.3em;height:1.3em;display:flex;align-items:center;justify-content:center}
+.ob.nori{width:calc(var(--s)*1cqw);height:calc(var(--s)*1cqw)}
+.ob.reveal{animation:pop .6s cubic-bezier(.3,1.7,.5,1)}@keyframes pop{from{transform:translate(-50%,-50%) scale(0)}}
+.ob.ping::before{content:"";position:absolute;inset:-60%;border-radius:50%;border:.4cqw solid #ffc93c;animation:pg 1s ease-out infinite}@keyframes pg{from{transform:scale(.5);opacity:1}to{transform:scale(1.6);opacity:0}}
+.ob.miss{animation:sh .3s}@keyframes sh{25%{transform:translate(-60%,-50%)}75%{transform:translate(-40%,-50%)}}
+.dec{position:absolute;transform:translate(-50%,-50%);font-size:calc(var(--s)*1cqw);pointer-events:none;opacity:.9}
+.pan{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:5cqw;height:5cqw;border-radius:50%;border:1px solid #fff8;background:#0008;color:#fff;font-size:2cqw}.pan.l{left:1cqw}.pan.r{right:1cqw}
+.vtag{position:absolute;left:1.5cqw;top:1.2cqw;z-index:5;background:#000a;color:#fff;border-radius:1.5cqw;padding:.5cqw 1.5cqw;font-size:max(11px,1.7cqw)}
+.pt{position:absolute;border-radius:50%;pointer-events:none;animation:ptf linear infinite}@keyframes ptf{from{transform:translateY(-5cqw)}to{transform:translateY(60cqw)}}
+.flist{display:flex;gap:.8cqw;align-items:center;flex-wrap:wrap;padding:1cqw 1.6cqw;background:linear-gradient(#10375f,#0a2a4d);border-top:1px solid #fff3;color:#fff}
+.fc{display:flex;align-items:center;gap:.6cqw;background:#ffffff18;border:1px solid #ffffff33;border-radius:2cqw;padding:.2cqw 1.2cqw .2cqw .6cqw;font-size:max(11px,1.5cqw)}.fc i{font-style:normal;font-size:2.6cqw;filter:brightness(0) invert(.75)}.fc.ok{background:#2fd5a333;border-color:#2fd5a3}.fc.ok i{filter:none}.fc.ok span{text-decoration:line-through;opacity:.8}
+.info{margin-left:auto;display:flex;gap:.8cqw;align-items:center;font-size:max(11px,1.5cqw)}
+.toast{position:absolute;left:50%;top:10cqw;transform:translateX(-50%);z-index:60;max-width:80cqw;background:#fff;color:var(--ink);border-radius:1.8cqw;padding:.9cqw 2.2cqw;font-size:max(12px,1.9cqw);font-weight:700;box-shadow:0 1cqw 3cqw #0008;text-align:center;line-height:1.45;animation:tp .25s cubic-bezier(.3,1.5,.5,1);pointer-events:none}
+.toast.bad{background:#ff6b6b;color:#fff}.toast.good{background:#2fd5a3;color:#032d20}@keyframes tp{from{transform:translate(-50%,-1cqw) scale(.7);opacity:0}}
+/* lab */
+.labg{display:grid;grid-template-columns:1.25fr 1fr;gap:1.6cqw;padding:1.6cqw;background:linear-gradient(#0e3a66,#0a2a4d);color:#fff}
+.labg canvas{width:100%;display:block;border-radius:1.6cqw;border:1px solid #fff4;background:#000}
+.panel{padding:1.8cqw;display:flex;flex-direction:column;gap:1cqw}
+.panel h3{margin:0;font:400 2.6cqw Jua;color:var(--sun)}.panel p{margin:0;line-height:1.55}
+.task{background:#ffffff14;border-radius:1.4cqw;padding:.8cqw 1.4cqw;border-left:.5cqw solid var(--sun)}.task.dn{border-color:var(--mint);opacity:.75}
+.big{font:400 4.4cqw Jua;color:var(--mint)}.rng{width:100%;accent-color:#ffc93c;height:3cqw}
+.opts{display:grid;gap:.9cqw;grid-template-columns:1fr 1fr}.opts.t3{grid-template-columns:repeat(3,1fr)}
+.opt{border:0;border-radius:1.3cqw;background:#fff;color:var(--ink);padding:1cqw 1.4cqw;text-align:left;font-weight:700;font-size:max(12px,1.8cqw);box-shadow:0 .4cqw 0 #8fb4d4}.opt:hover{background:#fff6cf}.opt:active{transform:translateY(.3cqw);box-shadow:none}.opt.c{text-align:center}
+.shake{animation:shk .35s}@keyframes shk{25%{transform:translateX(-1cqw)}75%{transform:translateX(1cqw)}}
+.rec{display:flex;gap:.8cqw;flex-wrap:wrap}.rec .chip{background:#2fd5a322}
+/* modal */
+.modal{position:absolute;inset:0;z-index:50;background:#020c1acc;display:flex;align-items:center;justify-content:center;padding:2cqw;backdrop-filter:blur(4px)}
+.box{width:min(100%,74cqw);max-height:96%;overflow:auto;background:linear-gradient(#f6fbff,#dcefff);color:var(--ink);border-radius:2.4cqw;padding:2.4cqw;box-shadow:0 2cqw 6cqw #000c;animation:bp .25s cubic-bezier(.3,1.5,.5,1)}@keyframes bp{from{transform:scale(.7);opacity:0}}
+.box h3{margin:0 0 1cqw;font:400 3.2cqw Jua;color:#1560b0}
+.q{background:#fff;color:var(--ink);border-radius:1.6cqw;padding:1.5cqw 2cqw;font-size:max(14px,2.5cqw);line-height:1.5;margin:1cqw 0;font-weight:700;box-shadow:inset 0 0 0 2px #cfe6fb}
+.prog{height:1.6cqw;border-radius:1cqw;background:#bcd6ee;overflow:hidden}.prog i{display:block;height:100%;background:linear-gradient(90deg,#2fd5a3,#4db8ff);transition:width .3s}
+.bigic{font-size:14cqw;text-align:center;line-height:1.1}.cv{font:400 6cqw Jua;text-align:center;letter-spacing:1.2cqw;background:#06182c;color:#2fd5a3;border-radius:1.6cqw;padding:.6cqw;margin:1.2cqw 0;min-height:9cqw;text-shadow:0 0 1.5cqw #2fd5a3}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:1cqw;max-width:34cqw;margin:0 auto 1.2cqw}.pad button{padding:.7cqw;font:400 3.4cqw Jua;border:0;border-radius:1.4cqw;background:#fff;box-shadow:0 .5cqw 0 #8fb4d4}
+/* sim */
+.simg{display:grid;grid-template-columns:1.5fr 1fr;gap:1.4cqw;padding:1.4cqw;background:linear-gradient(#0e3a66,#0a2a4d);color:#fff}
+.sector{display:grid;grid-template-columns:7cqw 1fr auto;gap:1.2cqw;align-items:center;padding:1cqw 1.4cqw;margin-bottom:.9cqw}
+.sector .ic{font-size:5cqw;text-align:center}.sector b{font:400 2.1cqw Jua}.sector small{display:block;opacity:.8;font-size:max(10px,1.3cqw)}
+.pips{display:flex;gap:.4cqw;margin-top:.4cqw}.pips i{width:3cqw;height:1.2cqw;border-radius:1cqw;background:#ffffff30}.pips i.on{background:linear-gradient(90deg,#2fd5a3,#8bf5cc)}
+.stat{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8cqw;margin-bottom:1cqw}.stat div{padding:.8cqw;text-align:center}.stat b{display:block;font:400 3.2cqw Jua}.stat small{opacity:.8;font-size:max(10px,1.3cqw)}
+.iceb{height:2.2cqw;border-radius:1.2cqw;background:#ffffff28;overflow:hidden}.iceb i{display:block;height:100%;background:linear-gradient(90deg,#8fe0ff,#fff);transition:width .5s}
+/* find nori */
+.fn{padding:0;display:block;min-height:0;background:#0a2a4d}.fn .board{position:relative;aspect-ratio:16/9}.fn svg{position:absolute;inset:0;width:100%;height:100%}
+.berg{position:absolute;transform:translate(-50%,-50%);background:none;border:0;padding:0;width:15cqw;height:11cqw;transition:transform .15s}.berg:hover:not(:disabled){transform:translate(-50%,-54%) scale(1.05)}
+.berg .mate{position:absolute;right:-6%;bottom:2%;font-size:4cqw}.berg svg{position:absolute;inset:0}.berg.sm{width:10cqw;height:7.4cqw}.berg.sm .mate{font-size:3cqw}
+.cards{display:flex;gap:1cqw;padding:1cqw 1.6cqw;background:#0a2a4d;flex-wrap:wrap;color:#fff}.cc{flex:1;min-width:24cqw;background:linear-gradient(#ffffff22,#ffffff0e);border:1px solid #fff4;border-radius:1.5cqw;padding:.8cqw 1.4cqw;font-size:max(11px,1.6cqw)}.cc b{color:var(--sun)}
+.end{background:radial-gradient(circle at 50% 30%,#fff6b8,#7fd2ff 70%)}.end .ttl{background:linear-gradient(#fff,#ffe58a)}
+.confetti{position:absolute;top:-5cqw;font-size:4cqw;animation:fall linear infinite;pointer-events:none}@keyframes fall{to{transform:translateY(80cqw) rotate(360deg)}}
+#teacher{background:#f2f9ff;border-radius:18px;padding:18px;box-shadow:0 20px 60px #0008}
+#teacher h1{margin:0;font:400 30px Jua;color:#1560b0}
+.tg{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:14px;max-height:560px;overflow:auto}
+.tc{background:#fff;border:1px solid #cfe3f5;border-radius:12px;padding:9px 11px;font-size:13px}.tc.w{background:#fff6cf;border-color:#ffc93c}
+.dt{display:inline-block;font-size:11px;border-radius:8px;padding:0 6px;margin-right:3px;background:#dfe8f1}.dt.d{background:#2fd5a3;color:#032d20}
+@media(max-width:700px){.labg,.simg{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+
+/* 보정 스타일 */
+.game, #teacher {width:100%; min-width:0}
+.game {isolation:isolate}
+#main {min-width:0}
+.scr {min-height:clamp(330px,56cqw,620px)}
+.scr > * {max-width:100%}
+.ttl {overflow-wrap:anywhere}
+.sub {text-wrap:pretty}
+button { -webkit-tap-highlight-color:transparent }
+button:focus-visible {outline-offset:3px}
+.vp, .fn .board, .map .board {width:100%; aspect-ratio:16/9}
+.vp {min-height:0}
+.world {height:100%; min-height:0}
+.world svg.sc, .fn .board > svg, .map .board > svg {pointer-events:none}
+.ob, .berg, .node {touch-action:manipulation}
+.ob {display:flex;align-items:center;justify-content:center;line-height:1;white-space:nowrap}
+.ob.nori {overflow:visible}
+.ob.found {z-index:4}
+.flist {position:relative;z-index:2}
+.cards {position:relative;z-index:2}
+.modal {overflow:auto}
+.box {width:min(94%,740px);max-height:92%;overscroll-behavior:contain}
+.q {overflow-wrap:anywhere}
+.opts .opt {min-width:0;overflow-wrap:anywhere}
+#teacher {margin-top:14px;max-width:100%;overflow:hidden}
+.tg {max-height:65vh}
+.ob.visual-hit{width:12cqw;height:12cqw;opacity:0;background:transparent;border:0;border-radius:50%;filter:none;z-index:4;cursor:pointer;touch-action:manipulation}
+.ob.visual-hit:hover{opacity:1;outline:.35cqw dashed #ffe27a;background:#ffe27a18;transform:translate(-50%,-50%) scale(1.06)}
+.ob.visual-hit:focus-visible{opacity:1;outline:.4cqw solid #ffe27a}
+.ob.visual-hit.found{opacity:0;pointer-events:none;animation:marineEscape .85s ease-in forwards}
+@keyframes marineEscape{0%{opacity:0;transform:translate(-50%,-50%) scale(1)}12%{opacity:1;outline:.45cqw solid #8ffff0;box-shadow:0 0 2cqw #a8fff0}38%{opacity:1;transform:translate(-50%,-58%) scale(1.18) rotate(-5deg);filter:drop-shadow(0 0 1.4cqw #b8fff4)}70%{opacity:.9;transform:translate(calc(-50% + 2cqw),-105%) scale(.9) rotate(6deg)}100%{opacity:0;transform:translate(calc(-50% + 5cqw),-185%) scale(.45) rotate(12deg)}}
+.vp.rescue-scene{background:#087eb2}
+</style>
+<script src="/_sdk/263f7f1ec427fef1.data_sdk.js" onerror="void 0"></script>
+</head><body>
+<div class="wrap">
+<div class="top"><span>🌍 SAVE THE EARTH — 지구 지킴이 탐험대</span><button id="tbtn" onclick="toggleTeacher()">👩‍🏫 교사용</button></div>
+<div class="game" id="game">
+ <div id="hud" class="hud hidden"></div>
+ <div id="main"></div>
+</div>
+<section id="teacher" class="hidden"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><h1>교사용 운영 센터</h1><p id="tstore" style="margin:6px 0"></p></div><button class="btn r sm" onclick="resetAll()">전체 초기화</button></div><b id="tsum" aria-live="polite"></b><div id="tg" class="tg"></div></section>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const R=seed=>{let s=seed;return()=>(s=(s*16807)%2147483647)/2147483647;};
+/* ===== 사운드 ===== */
+let snd=true,ac=null;
+function beep(seq,type="sine",vol=.07){if(!snd)return;try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();let t=ac.currentTime;seq.forEach(([f,d])=>{const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+d);t+=d*.85;});}catch(_){}}
+const S={click:()=>beep([[700,.05]]),ok:()=>beep([[523,.08],[659,.08],[784,.14]]),bad:()=>beep([[240,.12],[170,.2]],"sawtooth",.05),get:()=>beep([[880,.07],[1175,.1]]),win:()=>beep([[523,.1],[659,.1],[784,.1],[1047,.1],[1319,.35]]),pop:()=>beep([[400,.04],[900,.06]])};
+function toggleSnd(){snd=!snd;$("snd").textContent=snd?"🔊":"🔇";}
+/* ===== 저장 (공유 → 없으면 브라우저) ===== */
+const blank=()=>({student_number:0,logged_in:false,last_login_at:"",stage_1_quiz_passed:false,stage_1_completed:false,stage_1_score:0,stage_2_quiz_passed:false,stage_2_completed:false,stage_2_score:0,stage_3_quiz_passed:false,stage_3_completed:false,stage_3_score:0,item_gun:false,item_ice:false,item_net:false,boss_available:false,boss_in_progress:false,boss_defeated:false});
+const norm=r=>{const d={...blank(),...r};d.boss_available=!!(d.stage_1_completed&&d.stage_2_completed&&d.stage_3_completed);return d;};
+const Store={mode:"local",map:new Map(),KEY:"find_nori_v1",ready:false,
+ load(){try{this.map=new Map(Object.entries(JSON.parse(localStorage.getItem(this.KEY)||"{}")).map(([k,v])=>[+k,norm(v)]));}catch(_){}},
+ persist(){try{localStorage.setItem(this.KEY,JSON.stringify(Object.fromEntries(this.map)));}catch(_){}},
+ async init(){this.load();
+  if(window.dataSdk){try{const r=await Promise.race([window.dataSdk.init({onDataChanged:rows=>{this.map=new Map();rows.forEach(x=>{const n=+x.student_number;if(n>=1&&n<=99)this.map.set(n,{...norm(x),__backendId:x.__backendId});});hud();if(!$("teacher").classList.contains("hidden"))renderT();}}),new Promise(r=>setTimeout(()=>r(null),2500))]);if(r&&r.isOk)this.mode="shared";}catch(_){}}
+  addEventListener("storage",e=>{if(e.key===this.KEY){this.load();hud();}});this.ready=true;},
+ get(n){return norm(this.map.get(+n)||{student_number:+n});},
+ async save(n,p){n=+n;const nx=norm({...this.get(n),...p,student_number:n});
+  if(this.mode==="shared"){try{const bid=this.map.get(n)?.__backendId,rec={...nx};delete rec.__backendId;const r=bid?await window.dataSdk.update({...rec,__backendId:bid}):await window.dataSdk.create(rec);if(!r.isOk)throw 0;this.map.set(n,{...nx,__backendId:bid});return;}catch(_){this.mode="local";hud();}}
+  this.map.set(n,nx);this.persist();},
+ async reset(){if(this.mode==="shared")for(const[n,v]of[...this.map])if(v.__backendId)try{await window.dataSdk.update({...blank(),student_number:n,__backendId:v.__backendId});}catch(_){}this.map=new Map();this.persist();}};
+/* ===== 공통 ===== */
+let me=null,raf=0,timers=[],tm=null;
+function clearAll(){cancelAnimationFrame(raf);timers.forEach(clearInterval);timers=[];closeModal();}
+function setMain(h,cls=""){clearAll();$("game").querySelectorAll(".toast").forEach(x=>x.remove());$("main").className=cls;$("main").innerHTML=h;}
+function toast(m,t=""){const g=$("game");g.querySelectorAll(".toast").forEach(x=>x.remove());const e=document.createElement("div");e.className="toast "+t;e.innerHTML=m;g.appendChild(e);clearTimeout(tm);tm=setTimeout(()=>e.remove(),4800);}
+function fail(m){S.bad();toast(m,"bad");}
+function modal(h){closeModal();const m=document.createElement("div");m.className="modal";m.id="modal";m.setAttribute("role","dialog");m.innerHTML=`<div class="box">${h}</div>`;$("game").appendChild(m);m.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});(m.querySelector("button")||m).focus();}
+function closeModal(){const m=$("modal");if(m)m.remove();}
+function shk(el){el=el||document.querySelector("#modal .box")||$("main");el.classList.remove("shake");void el.offsetWidth;el.classList.add("shake");}
+const NORI=(m="happy")=>`<svg class="nori" viewBox="0 0 100 100"><circle cx="20" cy="27" r="13" fill="#fff" stroke="#16324f" stroke-width="3"/><circle cx="80" cy="27" r="13" fill="#fff" stroke="#16324f" stroke-width="3"/><circle cx="20" cy="27" r="6" fill="#ffc7d4"/><circle cx="80" cy="27" r="6" fill="#ffc7d4"/><ellipse cx="50" cy="54" rx="39" ry="35" fill="#fff" stroke="#16324f" stroke-width="3"/><ellipse cx="50" cy="66" rx="18" ry="14" fill="#e3f1fb" stroke="#16324f" stroke-width="2"/><ellipse cx="50" cy="60" rx="6.5" ry="4.8" fill="#16324f"/>${m==="sad"?`<path d="M42 74Q50 68 58 74" fill="none" stroke="#16324f" stroke-width="2.6" stroke-linecap="round"/><path d="M26 42L40 46M74 42L60 46" stroke="#16324f" stroke-width="2.6" stroke-linecap="round"/><ellipse cx="33" cy="58" rx="2.6" ry="5" fill="#6cc4ff"/>`:`<path d="M42 70Q50 78 58 70" fill="none" stroke="#16324f" stroke-width="2.6" stroke-linecap="round"/>`}<circle cx="35" cy="49" r="${m==="sad"?4.6:4.2}" fill="#16324f"/><circle cx="65" cy="49" r="${m==="sad"?4.6:4.2}" fill="#16324f"/><circle cx="36.5" cy="47.5" r="1.4" fill="#fff"/><circle cx="66.5" cy="47.5" r="1.4" fill="#fff"/><path d="M22 88Q50 100 78 88L74 80Q50 92 26 80Z" fill="#ff5d5d" stroke="#16324f" stroke-width="2.4" stroke-linejoin="round"/></svg>`;
+/* ===== 학습 퀴즈 데이터 ===== */
+const quiz={
+1:[{q:"Turning off lights in an empty room can save electricity.",o:["O","X"],a:0},{q:"It is a good idea to leave the TV on when nobody is watching.",o:["O","X"],a:1},{q:"Closing the fridge door quickly can help save energy.",o:["O","X"],a:0},{q:"Setting the air conditioner to the coldest temperature all day saves energy.",o:["O","X"],a:1},{q:"Unplugging chargers when they are not needed is a useful habit.",o:["O","X"],a:0}],
+2:[{q:"What happens when huge chunks of ice melt?",o:["The sea level can rise.","The sea level always falls.","The ocean disappears.","The weather never changes."],a:0},{q:"What are coastlines?",o:["Areas of land along the sea","Deep parts of the ocean","Places high in the mountains","Pieces of ice"],a:0},{q:"Why must polar bears swim longer distances?",o:["There is less sea ice.","They want to leave the Earth.","The ocean has no water.","They cannot walk on land."],a:0},{q:"What may polar bears have trouble finding?",o:["Food","School books","Cars","Fresh snow only"],a:0},{q:"What does “population” mean?",o:["The number of animals in a group","The color of the sea","The size of an iceberg","The weather in a place"],a:0}], 
+3:[{q:"You find a plastic bottle on the beach. What should you do?",o:["Leave it there.","Throw it into the ocean.","Put it in a recycling bin.","Hide it under the sand."],a:2},{q:"Which action can help reduce plastic pollution?",o:["Using a reusable bottle","Using more plastic bags","Throwing plastic into the sea","Buying more disposable cups"],a:0},{q:"Why does plastic trash reach the ocean?",o:["Rain carries trash into rivers.","Fish carry trash to the beach.","People clean the ocean every day.","The sun turns trash into water."],a:0},{q:"What are microplastics?",o:["Large pieces of plastic","Tiny pieces of plastic","Small sea animals","Reusable plastic bottles"],a:1},{q:"Why can plastic pollution harm marine animals?",o:["It helps them find food.","It makes the ocean cleaner.","They may eat plastic or get caught in fishing nets.","It gives them more places to livequiz?"],a:2}]};
+
+const AREA={1:{n:"에너지 낭비 가정집",ic:"🏠",c:"#e8893a",rw:["🌡️","온도계"],key:"item_gun",clue:"📏 크기 단서"},2:{n:"녹는 북극",ic:"🧊",c:"#3ea3f0",rw:["❄️","얼음 결정"],key:"item_ice",clue:"🐾 동료 단서"},3:{n:"오염된 바다",ic:"🌊",c:"#1fb5a8",rw:["🧭","나침반"],key:"item_net",clue:"🧭 방향 단서"},4:{n:"Save the Earth 미션",ic:"🌍",c:"#23966b"}};
+/* ===== 배경 일러스트 (SVG) ===== */
+function svgArctic(){const r=R(11);let st="",fl="",cr="";
+ for(let i=0;i<50;i++)st+=`<circle cx="${r()*320}" cy="${r()*34}" r="${.2+r()*.5}" fill="#fff" opacity=".8"/>`;
+ for(let i=0;i<9;i++){const x=i*38+r()*10;fl+=`<ellipse cx="${x}" cy="${70+r()*22}" rx="${14+r()*14}" ry="${3+r()*3}" fill="#f2fbff" opacity=".9"/>`;}
+ for(let i=0;i<7;i++){const x=20+i*46;cr+=`<path d="M${x} 86l5 6l-3 4l6 4" stroke="#7ab4d6" stroke-width=".8" fill="none"/>`;}
+ return `<svg class="sc" viewBox="0 0 320 100" preserveAspectRatio="none"><defs><linearGradient id="a1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a1f4a"/><stop offset=".45" stop-color="#3e86c9"/><stop offset=".62" stop-color="#cdeeff"/></linearGradient><linearGradient id="a2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2fffb0" stop-opacity="0"/><stop offset=".4" stop-color="#2fffb0" stop-opacity=".5"/><stop offset=".75" stop-color="#9b6bff" stop-opacity=".4"/><stop offset="1" stop-color="#9b6bff" stop-opacity="0"/></linearGradient><linearGradient id="a3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#a9dcf5"/></linearGradient><filter id="bb"><feGaussianBlur stdDeviation="3"/></filter></defs>
+<rect width="320" height="100" fill="url(#a1)"/>${st}<path d="M0 26C50 4 90 40 150 16S250 8 320 24V40H0Z" fill="url(#a2)" filter="url(#bb)"/>
+<polygon points="0,64 30,34 56,58 92,28 126,60 160,40 196,62 232,32 268,58 300,38 320,52 320,66 0,66" fill="#7fb6dd"/><polygon points="92,28 84,40 92,38 100,42 232,32 224,44 232,42 240,46" fill="#fff" opacity=".9"/>
+<rect y="64" width="320" height="36" fill="url(#a3)"/>${fl}${cr}<path d="M0 64H320" stroke="#9fd2ee" stroke-width=".8"/>
+<polygon points="170,100 186,60 200,74 214,52 232,100" fill="#e6f6ff" stroke="#9fd2ee" stroke-width=".6"/><polygon points="40,100 52,70 66,82 80,64 98,100" fill="#e6f6ff" stroke="#9fd2ee" stroke-width=".6"/></svg>`;}
+function svgHome(){
+ return `<svg class="sc" viewBox="0 0 320 100" preserveAspectRatio="none">
+ <defs><linearGradient id="homeWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff0d5"/><stop offset="1" stop-color="#f2cda3"/></linearGradient><linearGradient id="homeFloor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c58b59"/><stop offset="1" stop-color="#875735"/></linearGradient></defs>
+ <rect width="320" height="78" fill="url(#homeWall)"/><rect y="78" width="320" height="22" fill="url(#homeFloor)"/>
+ <path d="M0 78H320" stroke="#8c5b3a" stroke-width="1.4"/>
+ <rect x="18" y="13" width="54" height="36" rx="2" fill="#fff8e9" stroke="#9d7657" stroke-width="2"/><rect x="22" y="17" width="46" height="28" fill="#a9dff5"/><path d="M45 17V45M22 31H68" stroke="#fff8e9" stroke-width="2"/><circle cx="57" cy="23" r="4" fill="#ffdc74"/><path d="M22 45L36 31L47 41L57 32L68 45" fill="#7ebd7b"/>
+ <rect x="104" y="7" width="112" height="5" rx="2" fill="#b28a62"/><rect x="151" y="12" width="2" height="10" fill="#b28a62"/><path d="M140 22Q152 10 164 22L160 27H144Z" fill="#f8d65d" stroke="#bb8c36" stroke-width="1"/>
+ <rect x="92" y="51" width="93" height="24" rx="5" fill="#478c91"/><rect x="99" y="45" width="79" height="17" rx="5" fill="#65a9a9"/><rect x="102" y="70" width="5" height="10" fill="#80573e"/><rect x="171" y="70" width="5" height="10" fill="#80573e"/>
+ <rect x="206" y="37" width="42" height="29" rx="2" fill="#393d49"/><rect x="210" y="41" width="34" height="21" fill="#8fcbe8"/><path d="M223 66L219 72H235L231 66" fill="#5d5d66"/>
+ <rect x="204" y="12" width="44" height="12" rx="3" fill="#f7fbff" stroke="#9daeb6" stroke-width="1.4"/><path d="M210 20H242" stroke="#82b8d2" stroke-width="1.2"/><path d="M214 25l-2 4M226 25l-2 4M238 25l-2 4" stroke="#60b9d5" stroke-width="1.5" stroke-linecap="round"/>
+ <rect x="266" y="21" width="34" height="55" rx="3" fill="#e9f0f3" stroke="#91a2a8" stroke-width="1.5"/><path d="M266 21L253 28V72L266 76Z" fill="#f9ffff" stroke="#91a2a8" stroke-width="1.5"/><line x1="266" y1="48" x2="300" y2="48" stroke="#91a2a8" stroke-width="1.4"/><line x1="293" y1="29" x2="293" y2="39" stroke="#91a2a8" stroke-width="2"/><line x1="293" y1="56" x2="293" y2="66" stroke="#91a2a8" stroke-width="2"/>
+ <rect x="17" y="78" width="31" height="4" rx="1" fill="#a8794f"/><rect x="25" y="74" width="5" height="4" rx="1" fill="#263b48"/><path d="M27 74V69Q27 66 30 66" fill="none" stroke="#263b48" stroke-width="1.5"/><path d="M31 73V68Q31 65 34 65" fill="none" stroke="#263b48" stroke-width="1.5"/>
+ <rect x="17" y="57" width="44" height="18" rx="2" fill="#b58b5b"/><path d="M21 57V52H57V57" fill="#d8b17b"/><rect x="27" y="61" width="24" height="3" fill="#e7d0ad"/>
+ <rect x="190" y="79" width="52" height="4" rx="2" fill="#6e482d"/><path d="M198 83V96M234 83V96" stroke="#6e482d" stroke-width="3"/>
+ <path d="M8 100L42 78M72 100L106 78M136 100L170 78M200 100L234 78M264 100L298 78" stroke="#9b6b43" stroke-width=".7" opacity=".45"/>
+ </svg>`;
+}
+function svgRescueOcean(){
+ return `<svg class="sc" viewBox="0 0 320 100" preserveAspectRatio="none" aria-label="Ocean rescue scene">
+ <defs><linearGradient id="rescueSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#65d9ed"/><stop offset=".48" stop-color="#159ac7"/><stop offset="1" stop-color="#06416e"/></linearGradient><linearGradient id="iceShelf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4ffff"/><stop offset="1" stop-color="#9ce8f4"/></linearGradient></defs>
+ <rect width="320" height="100" fill="url(#rescueSea)"/>
+ <path d="M0 0H320V13L300 18 276 11 254 17 228 10 205 15 180 9 154 17 126 10 100 16 72 9 48 15 24 8 0 13Z" fill="url(#iceShelf)"/>
+ <g fill="#e7fbff" opacity=".4"><path d="M30 17L43 72 54 17Z"/><path d="M102 18L120 66 127 16Z"/><path d="M229 16L245 59 253 16Z"/></g>
+ <g fill="none" stroke="#c6f8ff" stroke-width=".8" opacity=".7"><path d="M0 34Q25 30 50 34T100 34T150 34T200 34T250 34T320 34"/><path d="M0 70Q25 66 50 70T100 70T150 70T200 70T250 70T320 70"/></g>
+ <g transform="translate(58 32)"><ellipse rx="10" ry="5.2" fill="#ffcf5d" stroke="#fff1bd" stroke-width=".8"/><path d="M-9 0L-16 -5V5Z" fill="#ff9c55"/><circle cx="5" cy="-1" r="1" fill="#16445f"/><path d="M-2 -4L2 -8 5 -4" fill="#ff9c55"/></g>
+ <g transform="translate(134 58) rotate(-8)"><ellipse rx="10" ry="7" fill="#3a9f75" stroke="#b7f1a2" stroke-width="1"/><path d="M-8 -2L-14 -7Q-17 -7 -15 -2L-10 1M7 -2L13 -7Q17 -7 15 -2L10 1M-5 5L-9 10Q-10 12 -6 11L0 6M5 5L9 10Q10 12 6 11L1 6" fill="#54c795" stroke="#b7f1a2" stroke-width=".7"/><circle cx="11" cy="0" r="3.4" fill="#71d6a5"/><circle cx="12" cy="-.8" r=".65" fill="#173d51"/><path d="M-5 -4L0 -1 5 -4M-5 2L0 4 5 2" fill="none" stroke="#b7f1a2" stroke-width=".7"/></g>
+ <g transform="translate(211 35) rotate(7)"><ellipse rx="11" ry="6" fill="#a8c9d8" stroke="#e7fbff" stroke-width=".8"/><circle cx="10" cy="-1" r="4.5" fill="#c5e2eb"/><path d="M-6 3L-12 8 -2 6M3 5L9 9 7 3" fill="#8ab4c9"/><circle cx="11" cy="-2" r=".7" fill="#163e55"/><path d="M13 1l3 1" stroke="#163e55" stroke-width=".7"/></g>
+ <g transform="translate(269 62) rotate(-8)"><path d="M-15 1Q-9 -7 2 -5Q8 -4 13 -9L11 -2Q17 0 20 4Q10 3 5 7Q-5 11 -12 5L-19 9 -17 2 -22 -2Z" fill="#b6edf4" stroke="#e7ffff" stroke-width=".8"/><path d="M-1 -4L4 -10 7 -3" fill="#82cfe0"/><circle cx="10" cy="-2" r=".8" fill="#12455d"/><path d="M9 2Q12 4 15 2" fill="none" stroke="#12455d" stroke-width=".7"/></g>
+ <g transform="translate(96 77) rotate(-18)"><rect x="-3" y="-8" width="6" height="16" rx="1.5" fill="#e9f7ff" stroke="#d1e7f1" stroke-width=".8"/><rect x="-2" y="-11" width="4" height="3" rx=".5" fill="#f4b957"/><path d="M-2 -1H2" stroke="#9bc8d8" stroke-width=".7"/></g>
+ <g transform="translate(185 81) rotate(15)" fill="#ffffffa8" stroke="#e4ffff" stroke-width=".7"><path d="M-6 -7L2 -9 7 -4 4 7 -4 8 -7 0Z"/><path d="M-4 -6L4 5M3 -7L-4 6" fill="none"/></g>
+ <g transform="translate(295 29) rotate(-14)"><path d="M-5 -8H5L4 8H-4Z" fill="#ffb1a8" stroke="#ffe6df" stroke-width=".8"/><path d="M-4 -4H4M-4 1H4" stroke="#d56b70" stroke-width=".7"/></g>
+ <path d="M0 92Q35 85 70 93T140 91T210 92T280 90T320 92V100H0Z" fill="#c7dba2"/><path d="M0 97Q50 92 100 97T200 96T320 97V100H0Z" fill="#7da97b"/>
+ <g fill="none" stroke-linecap="round" stroke-width="2"><path d="M20 100Q13 87 22 79T20 68M24 100Q33 88 27 82T31 72" stroke="#45b88b"/><path d="M240 100Q232 89 241 80T239 69M246 100Q254 88 249 81T255 73" stroke="#3eb98c"/><path d="M305 100Q298 90 305 82T303 74" stroke="#47bd91"/></g>
+ <g fill="#e5ffff" opacity=".8"><circle cx="34" cy="49" r="1.2"/><circle cx="42" cy="44" r=".7"/><circle cx="169" cy="25" r="1"/><circle cx="177" cy="20" r="1.6"/><circle cx="287" cy="47" r="1.1"/></g>
+ <g fill="none" stroke="#d8f7f4" stroke-width="1.1" opacity=".72" stroke-linecap="round">
+  <path d="M31 14 Q80 39 119 48 T202 47 T291 76"/><path d="M28 27 Q84 51 126 61 T209 61 T296 89"/>
+  <path d="M49 7 Q72 40 89 68 T128 97"/><path d="M84 4 Q103 35 122 57 T169 96"/><path d="M132 2 Q151 31 169 56 T214 96"/><path d="M184 2 Q201 28 220 51 T263 95"/><path d="M237 3 Q252 30 269 52 T309 83"/>
+  <path d="M24 48L293 23M34 68L300 43M49 88L307 64" stroke-dasharray="3 2"/>
+ </g>
+ </svg>`;
+}
+const SCENES={
+1:{w:100,bg:svgHome,tag:"🏠 Energy-saving home — 집 안의 에너지 낭비를 찾아라!",pc:"#fff0d5",illustrated:true,homeMission:true,
+ deco:[],
+ objs:[
+  {id:"lamp",e:"💡",x:47.5,y:22,s:12,name:"켜진 조명",en:"Light left on",fact:"Turn off lights when nobody needs them.",fe:"사용하지 않는 조명은 꺼 주세요."},
+  {id:"tv",e:"📺",x:70.8,y:50,s:13,name:"켜진 TV",en:"TV left on",fact:"Turn off the TV when nobody is watching.",fe:"아무도 보지 않는 TV는 꺼 주세요."},
+  {id:"fridge",e:"🚪",x:90,y:49,s:13,name:"열린 냉장고 문",en:"Open fridge door",fact:"Close the fridge door quickly to keep the cold air inside.",fe:"냉장고 문을 빨리 닫아 냉기를 지켜요."},
+  {id:"ac",e:"❄️",x:69,y:20,s:13,name:"켜진 에어컨",en:"Air conditioner left on",fact:"Turn off the air conditioner when it is not needed, and keep windows closed while it is running.",fe:"필요하지 않을 때는 에어컨을 끄고, 켜져 있을 때는 창문을 닫아요."},
+  {id:"charger",e:"🔌",x:11,y:76,s:12,name:"사용하지 않는 충전기",en:"Unused charger plugged in",fact:"Unplug chargers when they are not needed.",fe:"사용하지 않는 충전기는 뽑아 주세요."},
+  {d:1,e:"☀️",x:14,y:31,s:12,name:"창문으로 들어오는 햇빛",en:"Sunlight",fact:"Daylight can help you use fewer electric lights.",fe:"햇빛은 조명 사용을 줄이는 데 도움이 돼요."},
+  {d:1,e:"🛋️",x:43,y:60,s:13,name:"소파",en:"Sofa",fact:"The sofa itself does not waste electricity.",fe:"소파 자체는 전기를 낭비하지 않아요."}
+ ]},2:{w:180,bg:svgArctic,tag:"🧊 녹는 북극 — 온난화의 증거를 찾아라!",pc:"#ffffff",
+ deco:[["🌌",20,9,6],["🐧",8,90,3],["⛵",96,56,3.4]],
+ objs:[
+  {id:"th",e:"🌡️",x:14,y:44,s:5.5,name:"온도계",fact:"북극은 지구 평균보다 훨씬 빠르게(약 2~4배) 따뜻해지고 있어요."},
+  {id:"ic",e:"💧",x:30,y:30,s:4.6,name:"녹는 고드름",fact:"기온이 오르면 얼음이 녹아 물이 돼요(melt)."},
+  {id:"cr",e:"🧊",x:45,y:72,s:5.5,name:"갈라진 해빙",fact:"바다 얼음(해빙)은 해마다 줄어들고 있어요."},
+  {id:"sg",e:"🪧",x:60,y:58,s:5,name:"후퇴 표지판",fact:"빙하 끝의 위치 표지판이 해마다 뒤로 물러나요."},
+  {id:"rl",e:"📏",x:76,y:82,s:5,name:"해수면 눈금",fact:"육지 얼음이 녹아 바다로 흘러가면 해수면이 올라가요."},
+  {id:"bear",e:"🐻‍❄️",x:91,y:68,s:5.5,name:"굶주린 북극곰",fact:"북극곰은 해빙 위에서 사냥해요. 얼음이 줄면 먹이 찾기가 힘들어요."},
+  {d:1,e:"⛄",x:8,y:76,s:5,name:"눈사람",fact:"귀엽지만 온난화의 증거는 아니에요."},
+  {d:1,e:"❄️",x:24,y:14,s:4,name:"눈 결정",fact:"눈 결정은 예쁘지만 증거는 아니에요."},
+  {d:1,e:"🦭",x:38,y:62,s:5,name:"바다표범",fact:"바다표범도 새끼를 키울 해빙이 필요해요."},
+  {d:1,e:"🎣",x:52,y:30,s:4.2,name:"낚시",fact:"낚시는 온난화의 증거가 아니에요."},
+  {d:1,e:"🐋",x:68,y:92,s:5,name:"고래",fact:"고래도 바다 환경 변화의 영향을 받아요."},
+  {d:1,e:"🛷",x:82,y:44,s:4.4,name:"썰매",fact:"썰매는 단서가 아니에요."},
+  {d:1,e:"🏔️",x:97,y:42,s:6,name:"산",fact:"산 자체는 증거가 아니에요."},
+  {nori:1,x:88,y:90,s:3.4,name:"노리"}]},
+3:{w:180,bg:svgRescueOcean,tag:"🌊 Ocean rescue — 그물에 걸린 해양생물을 구해 줘!",pc:"#d8fbff",rescue:true,
+ deco:[],
+ objs:[
+  {id:"fish",e:"🐠",x:18,y:32,s:10,name:"열대어",en:"Tropical fish",fact:"The fish is free! Clean water keeps it safe.",fe:"물고기가 그물에서 벗어났어요!"},
+  {id:"turtle",e:"🐢",x:42,y:58,s:11,name:"바다거북",en:"Sea turtle",fact:"Sea turtles can mistake plastic for food.",fe:"바다거북은 비닐을 먹이로 착각할 수 있어요."},
+  {id:"seal",e:"🦭",x:66,y:35,s:11,name:"바다표범",en:"Seal",fact:"Sea animals need a safe, clean ocean.",fe:"해양생물에게는 안전하고 깨끗한 바다가 필요해요."},
+  {id:"dolphin",e:"🐬",x:84,y:62,s:12,name:"돌고래",en:"Dolphin",fact:"Abandoned fishing nets can trap and injure dolphins.",fe:"버려진 그물은 돌고래를 다치게 할 수 있어요."}
+ ]}};;
+
+/* ===== 화면 로딩 및 시작 ===== */
+let pct=0;
+function showPre(){setMain(`<div class="scr pre"><div class="ttl">SAVE THE EARTH</div><div style="width:12cqw;height:12cqw" class="float">${NORI("sad")}</div><div id="pt" style="font-size:2.2cqw">LOADING... 0%</div><div class="lbar"><i id="pb"></i></div><button id="go" class="btn hidden blink" onclick="showMenu()">▶ CLICK TO START</button></div>`);
+ const iv=setInterval(()=>{pct=Math.min(100,pct+Math.random()*13);$("pb").style.width=pct+"%";$("pt").textContent=`LOADING... ${Math.floor(pct)}%`;if(pct>=100&&Store.ready){clearInterval(iv);$("pt").textContent="READY!";$("go").classList.remove("hidden");$("go").focus();}},110);timers.push(iv);}
+function showMenu(){S.ok();setMain(`<div class="scr menu"><svg class="ice" viewBox="0 0 320 100" preserveAspectRatio="none"><path d="M0 40Q40 24 80 38T160 34T240 40T320 30V100H0Z" fill="#fff"/><path d="M0 60Q60 48 120 60T240 58T320 56V100H0Z" fill="#d4efff"/></svg>
+ <div class="ttl" style="position:relative">SAVE THE EARTH</div><div class="jua" style="font-size:3.2cqw;color:#fff;position:relative">작은 실천으로 지구를 지켜라!</div>
+ <div style="width:17cqw;height:17cqw;position:relative" class="float">${NORI("sad")}</div>
+ <label for="sel" style="position:absolute;left:-999px">번호</label><select id="sel" class="sel" style="position:relative"><option value="">▼ 내 번호 선택</option></select>
+ <button class="btn g" style="position:relative" onclick="login()">PLAY ▶</button></div>`);const s=$("sel");for(let i=1;i<=99;i++)s.add(new Option(`${i}번`,i));}
+async function login(){const n=+$("sel").value;if(!n){fail("번호를 먼저 골라줘!");return;}await Store.save(n,{logged_in:true,last_login_at:new Date().toISOString()});me=n;$("hud").classList.remove("hidden");S.ok();hud();const d=Store.get(n);if(d.stage_1_completed)showMap();else story(0);}
+const bi=(e,k)=>`${e}<br><small style="opacity:.7;font-size:.8em">${k}</small>`;
+const STORY=[["sad",bi("Nori is a baby polar bear. One day, the ice he lived on melted away… 😢","북극에 살던 아기 북극곰 '노리'. 어느 날 노리가 살던 얼음이 녹아 사라졌어요…")],["sad",bi("The reason is global warming! Greenhouse gases are making the Earth hotter.","범인은 바로 지구온난화! 온실가스가 지구를 점점 뜨겁게 만들고 있어요.")],["happy",bi("Nori was scared and hid somewhere on Earth. Find the clues and save him! 🔍","노리는 놀라서 지구 곳곳에 숨어버렸어요. 단서를 찾아 노리를 구해줘!")]];
+function story(i){const [m,t]=STORY[i];setMain(`<div class="scr" style="background:linear-gradient(#0c3566,#2a86c2)"><div style="width:20cqw;height:20cqw" class="float">${NORI(m)}</div><div class="bub" style="font-size:2.3cqw;max-width:56cqw;text-align:center">${t}</div><div style="display:flex;gap:1cqw"><button class="btn b sm" onclick="showMap()">건너뛰기</button><button class="btn g" onclick="${i<2?`story(${i+1})`:"showMap()"}">${i<2?"다음 ▶":"출발! ▶"}</button></div></div>`);}
+/* ===== HUD 및 지도 ===== */
+function stars(d){return[1,2,3].reduce((a,k)=>a+(d[`stage_${k}_score`]||0),0);}
+function hud(){if(!me)return;const d=Store.get(me);$("hud").innerHTML=`<span class="chip">🧑 ${me}번</span><span class="chip">⭐ ${stars(d)}/18</span><span class="chip">🔢 ${[1,2,3].map(k=>d[`stage_${k}_completed`] ? "✓" : "○").join(" ")}</span>${[1,2,3].map(k=>`<span class="chip cl ${d[`stage_${k}_completed`]?"on":""}" title="${AREA[k].clue}">${AREA[k].clue.split(" ")[0]}</span>`).join("")}<span class="chip">${d.item_gun?"🌡️":"▫️"}${d.item_ice?"❄️":"▫️"}${d.item_net?"🧭":"▫️"}</span><span class="sp"></span><span class="chip">${Store.mode==="shared"?"☁️ 공유저장":"💾 기기저장"}</span><button id="snd" onclick="toggleSnd()" aria-label="소리">${snd?"🔊":"🔇"}</button><button onclick="showMap()">🗺️ 지도</button>`;}
+function showMap(){hud();const d=Store.get(me),P=[[14,44],[40,66],[64,40],[86,62]];
+ const nx=[1,2,3].find(k=>!d[`stage_${k}_completed`]);
+ const nodes=[1,2,3,4].map((n,i)=>{const un=n===4?d.boss_available:(n===1||d[`stage_${n-1}_completed`]),dn=n===4?d.boss_defeated:d[`stage_${n}_completed`];
+  return `<button class="node" style="left:${P[i][0]}%;top:${P[i][1]}%;--c:${AREA[n].c}" ${un?"":"disabled"} onclick="startArea(${n})"><span class="no">${n===4?"FINAL":"AREA "+n}</span><span class="ic">${AREA[n].ic}</span><span class="t">${AREA[n].n}</span><span class="st">${dn?"✓ 클리어":un?"입장!":"🔒"}</span></button>`;}).join("");
+ setMain(`<div class="scr map"><div class="board"><svg class="bgm" viewBox="0 0 160 90" preserveAspectRatio="none"><defs><radialGradient id="m1" cx=".5" cy=".4"><stop offset="0" stop-color="#2e9bd6"/><stop offset="1" stop-color="#0b3566"/></radialGradient></defs><rect width="160" height="90" fill="url(#m1)"/><g fill="#3fb98a" opacity=".35"><path d="M8 30Q20 12 40 22T50 42Q30 54 12 46Z"/><path d="M60 50Q80 36 104 46T112 72Q84 80 64 70Z"/><path d="M104 14Q130 6 150 22T146 48Q120 52 108 36Z"/></g><g stroke="#fff" stroke-opacity=".12" stroke-width=".3">${Array.from({length:9},(_,i)=>`<path d="M${i*20} 0V90"/>`).join("")}<path d="M0 30H160M0 60H160"/></g><path d="M22 40Q32 56 64 60T96 36T138 56" stroke="#fff" stroke-width="1.1" stroke-dasharray="3 3" fill="none" opacity=".7"/></svg>${nodes}
+ <div class="mnori"><div class="av">${NORI(d.boss_defeated?"happy":"sad")}</div><div class="bub">${d.boss_defeated?"모두 구해줬구나! 고마워! 💙":nx?`<b>${AREA[nx].n}</b>부터 가보자! 곳곳을 둘러보며 단서를 찾아줘.`:"모든 단서를 모았어! 상황실로 가자!"}</div></div></div></div>`);}
+const STEP=["Explore 탐색","Activity 활동","Mission 완료"];
+function stepper(p,n){return `<div class="steps"><b>${AREA[n].ic} AREA ${n} · ${AREA[n].n}</b>${STEP.map((s,i)=>`<span class="${i<p?"dn":i===p?"on":""}">${i+1}. ${s}</span>`).join("")}</div>`;}
+let sk={};
+function startArea(n){const d=Store.get(me);if(n===4){if(!d.boss_available)return;return finalEntry();}if(n>1&&!d[`stage_${n-1}_completed`])return;sk={n,seek:3,act:3};S.click();n===2?seekReport():seek(n);}
+
+/* --- 스테이지 2 탐색: 영어 필드 보고서 빈칸 채우기 --- */
+function seekReport(){const n=2;const R=[{w:"rise",s:"When huge chunks of ice melt, the sea level slowly starts to ___.",k:"큰 얼음덩어리가 녹으면 해수면이 서서히 올라가기 시작해요."},{w:"coastlines",s:"As the sea level rises, low ___ and small islands can disappear under water.",k:"해수면이 오르면 낮은 해안선과 작은 섬이 물에 잠길 수 있어요."},{w:"swim",s:"To reach another piece of ice, polar bears must ___ much longer distances.",k:"다른 얼음에 가려면 북극곰은 훨씬 먼 거리를 헤엄쳐야 해요."},{w:"food",s:"Many polar bears cannot find enough ___.",k:"많은 북극곰이 충분한 먹이를 찾지 못해요."},{w:"population",s:"The polar bear ___ keeps getting smaller.",k:"북극곰의 개체 수는 계속 줄어들어요."}];
+ let sel=null,miss=0,hints=0;const fill=[],shown=[];const bank=shuf([...R.map(r=>r.w),"fall","hunt"]);
+ function draw(){setMain(`${stepper(0,n)}<div style="padding:1.6cqw 2cqw;background:linear-gradient(#0c3566,#2a86c2);color:#fff;min-height:48cqw"><div style="display:flex;gap:1.4cqw;align-items:center"><div style="width:11cqw;height:11cqw;flex:none" class="float">${NORI("sad")}</div><div><div style="font-size:2.3cqw;font-weight:900">🧭 Nori’s Arctic Field Report</div><div style="font-size:1.7cqw">Choose a word from the <b>word bank</b>, then tap a <b>blank</b>. <small>단어를 고른 뒤 빈칸을 눌러요. 💡 = 한글 힌트</small></div></div></div>
+ <div style="display:grid;gap:.8cqw;margin:1.2cqw 0">${R.map((r,i)=>`<div class="task" style="display:flex;align-items:center;gap:1cqw;font-size:max(12px,1.9cqw)"><b>${i+1}.</b><span style="flex:1">${r.s.split("___")[0]}<button class="opt c blk" data-i="${i}" style="display:inline-block;min-width:11cqw;padding:.2cqw 1cqw;${fill[i]?"background:#c9f7e3":"background:#fff8d6;border:2px dashed #e6a700"}">${fill[i]||"＿＿＿"}</button>${r.s.split("___")[1]}${shown[i]?`<br><small style="opacity:.85">${r.k}</small>`:""}</span><button class="btn sm b hn" data-i="${i}">💡</button></div>`).join("")}</div>
+ <div style="font-size:1.6cqw;margin-bottom:.4cqw">📚 Word Bank <small>(단어 상자)</small></div><div style="display:flex;gap:.9cqw;flex-wrap:wrap">${bank.map(w=>`<button class="opt c wd" data-w="${w}" style="${fill.includes(w)?"opacity:.3":""}${sel===w?";background:#ffe27a;outline:3px solid #ffb300":""}">${w}</button>`).join("")}</div><div style="margin-top:1cqw"><span class="chip">실수 ${miss}</span></div></div>`);
+  document.querySelectorAll(".wd").forEach(b=>b.onclick=()=>{if(fill.includes(b.dataset.w))return;sel=b.dataset.w;S.click();draw();});
+  document.querySelectorAll(".hn").forEach(b=>b.onclick=()=>{if(!shown[+b.dataset.i]){shown[+b.dataset.i]=1;hints++;}draw();});
+  document.querySelectorAll(".blk").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(fill[i])return;if(!sel){toast("Pick a word first! 단어를 먼저 골라요.","bad");return;}
+   if(sel!==R[i].w){miss++;S.bad();toast(`❌ “${sel}” doesn’t fit. Read the sentence again! <small>문장을 다시 읽어봐요.</small>`,"bad");sel=null;draw();return;}
+   fill[i]=sel;sel=null;S.get();draw();if(R.every((r,k)=>fill[k])){sk.seek=miss<=1&&hints===0?3:miss<=4&&hints<=2?2:1;S.win();modal(`<div style="display:flex;gap:2cqw;align-items:center"><div style="width:16cqw;height:16cqw;flex:none" class="float">${NORI("happy")}</div><div><h3>Report complete! 🎉 <small>(보고서 완성)</small></h3><p style="font-size:1.9cqw;margin:0 0 .8cqw">“Thank you! Now let’s look at the real data.”<br><small>고마워! 이제 진짜 데이터를 살펴보자!</small></p><p style="margin:0;font-size:1.8cqw">탐색 별점: ${"⭐".repeat(sk.seek)} (실수 ${miss} · 힌트 ${hints})</p></div></div><div style="text-align:right;margin-top:1.4cqw"><button class="btn g" onclick="closeModal();labIce()">Experiment ▶ 실험 시작</button></div>`);}});}
+ draw();}
+
+/* --- 탐색 공통 (Area 1, 3) --- */
+function seek(n){const C=SCENES[n],found=new Set(),T=C.objs.filter(o=>o.id&&!o.d),NO=C.objs.find(o=>o.nori);let miss=0,hints=0,reveal=false,pan=0,drag=null,moved=false,rescueBusy=false;
+ const pts=Array.from({length:22},(_,i)=>`<i class="pt" style="left:${(i*47)%100}%;width:${.5+(i%3)*.4}cqw;height:${.5+(i%3)*.4}cqw;background:${C.pc};opacity:.4;animation-duration:${6+i%5}s;animation-delay:${-i%6}s"></i>`).join("");
+ setMain(`${stepper(0,n)}<div class="vp ${C.rescue?"rescue-scene":""}" id="vp"><div class="world" id="world" style="width:${C.w}%">${C.bg()}${C.deco.map(([e,x,y,s])=>`<span class="dec" style="left:${x}%;top:${y}%;--s:${s}">${e}</span>`).join("")}<div id="obs"></div></div>${pts}<button class="pan l" id="pl" aria-label="왼쪽">◀</button><button class="pan r" id="pr" aria-label="오른쪽">▶</button><div class="vtag">${C.tag} <span style="opacity:.7">· ${C.rescue?"해양생물을 누르고 문제를 맞혀 구조해요":C.illustrated?"그림 속 물건을 눌러 확인해요":"드래그로 둘러보기"}</span></div></div><div class="flist" id="fl"></div>`);
+ const vp=$("vp"),wd=$("world");
+ const maxP=()=>Math.max(0,wd.offsetWidth-vp.offsetWidth),setPan=v=>{pan=Math.max(0,Math.min(maxP(),v));wd.style.transform=`translateX(${-pan}px)`;};
+ const slide=(to)=>{const from=pan,t0=performance.now();(function f(t){const k=Math.min(1,(t-t0)/450);setPan(from+(to-from)*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(f);})(t0);};
+ vp.addEventListener("pointerdown",e=>{drag={x:e.clientX,p:pan};moved=false;});
+ vp.addEventListener("pointermove",e=>{if(!drag)return;const dx=e.clientX-drag.x;if(Math.abs(dx)>6)moved=true;if(moved)setPan(drag.p-dx);});
+ ["pointerup","pointerleave","pointercancel"].forEach(ev=>vp.addEventListener(ev,()=>{drag=null;}));
+ $("pl").onclick=()=>slide(pan-vp.offsetWidth*.6);$("pr").onclick=()=>slide(pan+vp.offsetWidth*.6);
+ const focus=o=>slide(Math.max(0,Math.min(maxP(),wd.offsetWidth*o.x/100-vp.offsetWidth/2)));
+ function draw(){$("obs").innerHTML=C.objs.filter(o=>!o.nori||reveal).map((o,k)=>o.nori?`<button class="ob nori reveal" data-k="n" style="left:${o.x}%;top:${o.y}%;--s:${o.s}" aria-label="숨은 노리">${NORI("happy")}</button>`:`<button class="ob ${(C.rescue||C.illustrated)?"visual-hit":""} ${found.has(o.id)?"found":""}" data-k="${C.objs.indexOf(o)}" style="left:${o.x}%;top:${o.y}%;--s:${o.s}" aria-label="${o.name}" title="${o.name}">${(C.rescue||C.illustrated)?"":o.e}</button>`).join("");
+  $("obs").querySelectorAll(".ob").forEach(b=>b.onclick=()=>{if(moved)return;click(b);});
+  $("fl").innerHTML=T.map(o=>`<span class="fc ${found.has(o.id)?"ok":""}"><i>${o.e}</i><span>${o.en||o.name} <small style="opacity:.7">${o.name}</small></span></span>`).join("")+(C.rescue?`<span class="fc ${found.size===T.length?"ok":""}"><i>🫧</i><span>Rescued ${found.size}/${T.length} · 구조한 생물</span></span>`:C.homeMission?`<span class="fc ${found.size===T.length?"ok":""}"><i>⚡</i><span>Energy wastes ${found.size}/${T.length} · 에너지 낭비</span></span>`:`<span class="fc ${reveal?"ok":""}" style="${reveal?"":"opacity:.5"}"><i>🐻‍❄️</i><span>${reveal?"노리 발견 필요!":"???"}</span></span>`)+`<span class="info"><span class="chip">실수 ${miss}</span><button class="btn sm b" id="hint">💡 힌트</button></span>`;
+  $("hint").onclick=hint;}
+ function click(b){const o=b.dataset.k==="n"?NO:C.objs[+b.dataset.k];
+  if(o.nori){S.win();finishSeek();return;}
+  if(found.has(o.id))return;
+  if(o.d){miss++;S.bad();b.classList.add("miss");toast(`${o.e} <b>${o.en||o.name}</b> (${o.name}) — Not a target! 대상이 아니에요.<br><small>${o.fe||""} ${o.fact}</small>`,"bad");draw();return;}
+  if(C.rescue){askRescueQuestion(o);return;}
+  found.add(o.id);S.get();toast(`${o.e} <b>${o.en||o.name}</b> (${o.name}) — Found! 발견!<br><small>${o.fe||""}<br>${o.fact}</small>`,"good");
+  if(found.size===T.length){timers.push(setTimeout(()=>{if(C.rescue){S.ok();toast("🌊 All sea animals are safe! 모든 해양생물을 구했어요!","good");timers.push(setTimeout(finishSeek,900));}else if(C.homeMission){S.ok();toast("⚡ 에너지 낭비 원인을 모두 찾았어요! 이제 절약 방법을 배워 봐요.","good");timers.push(setTimeout(finishSeek,900));}else{reveal=true;S.ok();toast("🐾 Nori is crying somewhere… Find him! (노리를 찾아봐!)","good");draw();focus(NO);}},900));}
+  draw();}
+ function askRescueQuestion(o){
+  if(rescueBusy||found.has(o.id))return;
+  rescueBusy=true;
+  const questions={
+   fish:{q:"How can plastic trash reach the ocean?",ko:"플라스틱 쓰레기는 어떻게 바다까지 갈 수 있을까요?",opts:["Rain can carry litter into rivers.","Plastic always disappears on land.","Fish carry all litter from houses."],a:0,why:"Rain can wash litter into drains and rivers, and then into the ocean."},
+   turtle:{q:"Why can a plastic bag be dangerous to a sea turtle?",ko:"비닐봉지가 바다거북에게 위험한 이유는 무엇일까요?",opts:["It may mistake the bag for food.","The bag gives it more oxygen.","The bag makes the ocean colder."],a:0,why:"Sea turtles may mistake floating plastic for food."},
+   seal:{q:"What should we do with plastic bottles?",ko:"플라스틱 병은 어떻게 해야 할까요?",opts:["Throw them into the sea.","Put them in a recycling bin.","Leave them on the beach."],a:1,why:"Recycling helps keep plastic out of the ocean."},
+   dolphin:{q:"Why are abandoned fishing nets dangerous?",ko:"버려진 어망이 위험한 이유는 무엇일까요?",opts:["They make the water cleaner.","They give dolphins more food.","They can trap and hurt sea animals."],a:2,why:"Lost nets can trap and injure dolphins and other sea animals."}
+  };
+  const q=questions[o.id]||questions.fish;
+  modal(`<div style="text-align:center"><div style="font-size:4.5cqw">${o.e}</div><h3>${o.name}을(를) 구해 주세요!</h3><p style="font-size:2.2cqw;font-weight:900;margin:.5cqw 0">${q.q}</p><p style="font-size:1.7cqw;color:#64748b;margin:.3cqw 0 1cqw">${q.ko}</p><div id="rescue-answers" style="display:grid;gap:.7cqw">${q.opts.map((v,i)=>`<button class="opt" data-rq="${i}" style="text-align:left;padding:1cqw 1.2cqw;font-size:1.8cqw">${["A","B","C"][i]}. ${v}</button>`).join("")}</div><div id="rescue-feedback" style="min-height:2.5em;margin-top:1cqw;font-size:1.7cqw;font-weight:800"></div></div>`);
+  document.querySelectorAll("#rescue-answers button").forEach(btn=>btn.onclick=()=>{
+   if(+btn.dataset.rq!==q.a){miss++;S.bad();$("rescue-feedback").textContent="아직 풀리지 않았어요. 다시 생각해 보세요! Try again.";btn.style.borderColor="#d85b55";return;}
+   document.querySelectorAll("#rescue-answers button").forEach(x=>x.disabled=true);
+   $("rescue-feedback").textContent="정답! 그물이 풀리고 있어요! " + q.why;
+   S.ok();
+   timers.push(setTimeout(()=>{
+    closeModal();rescueBusy=false;found.add(o.id);S.get();draw();
+    toast(`🌊 ${o.name} 구조 성공! ${q.why}`,"good");
+    if(found.size===T.length){timers.push(setTimeout(()=>{S.ok();finishSeek();},1000));}
+   },850));
+  });
+ }
+ function hint(){hints++;const o=(C.rescue||C.homeMission)?T.find(x=>!found.has(x.id)):(reveal?NO:T.find(x=>!found.has(x.id)));if(!o)return;focus(o);draw();timers.push(setTimeout(()=>{const b=$("obs").querySelector(o.nori?".nori":`[data-k="${C.objs.indexOf(o)}"]`);if(b)b.classList.add("ping");},500));toast(C.rescue?"💡 힌트! 해양생물을 클릭한 뒤, 문제를 맞히면 구조할 수 있어요.":C.homeMission?"💡 힌트! 전기를 사용하는 기기 중, 필요 없는데 켜져 있거나 계속 연결된 것을 찾아보세요.":"💡 힌트! 노란 원 근처를 잘 살펴봐요.");}
+ function finishSeek(){sk.seek=miss<=2&&hints===0?3:miss<=5&&hints<=2?2:1;const title=C.homeMission?"에너지 낭비 원인을 모두 찾았어요! ⚡":C.rescue?"해양생물 구조 성공! 🌊":"노리 발견! 🎉";const desc=C.homeMission?"집 안에서 불필요하게 사용 중인 전기 기기를 찾았어요. 이제 각 상황에서 에너지를 아끼는 방법을 골라 봐요.":C.rescue?"모든 해양생물을 구조했어요! 다음 미션에서 지구를 지키는 방법을 배워 봐요.":"찾아줘서 고마워! 그런데 나를 구하려면 먼저 <b>실험</b>으로 원리를 알아야 해!";modal(`<div style="display:flex;gap:2cqw;align-items:center"><div style="width:16cqw;height:16cqw;flex:none" class="float">${NORI("happy")}</div><div><h3>${title}</h3><p style="margin:0 0 .8cqw;font-size:2.1cqw">${desc}</p><p style="margin:0;font-size:1.8cqw">탐색 별점: ${"⭐".repeat(sk.seek)} (실수 ${miss} · 힌트 ${hints})</p></div></div><div style="text-align:right;margin-top:1.4cqw"><button class="btn g" onclick="closeModal();${n===3?'quizStage(3)': ["","labGreen","labIce","labSea"][n]+'()'}">${C.homeMission?"에너지 절약 활동 시작 ▶":n===3?'확인 퀴즈 ▶':'활동 시작 ▶'}</button></div>`);}
+ draw();}
+
+/* --- 활동 1: 에코 히어로 에너지 절약 미션 --- */
+function labGreen(){
+ const n=1;
+ const missions=[
+  {e:"💡",title:"You leave your bedroom.",ko:"방에서 나가려고 해요.",q:"The light is still on, but nobody is staying in the room. What should you do?",opts:["Leave the light on all day.","Turn off the light.","Turn on another light."],a:1,why:"Turn off lights when nobody is in the room."},
+  {e:"❄️",title:"It is cool enough in your living room.",ko:"거실은 이미 충분히 시원해요.",q:"What is a smart way to use the air conditioner?",opts:["Set a reasonable temperature.","Set it to the coldest level all day.","Keep it on with the windows open."],a:0,why:"A reasonable setting helps avoid wasting electricity."},
+  {e:"📺",title:"Everyone leaves to eat dinner.",ko:"가족이 모두 저녁을 먹으러 가요.",q:"The TV is still playing. What should you do?",opts:["Turn up the volume.","Leave it playing for nobody.","Turn off the TV."],a:2,why:"Turn off the TV when nobody is watching."},
+  {e:"🚪",title:"You take something from the fridge.",ko:"냉장고에서 음식을 꺼냈어요.",q:"What should you do next?",opts:["Keep the door open while you decide.","Close the fridge door quickly.","Open the fridge again and again."],a:1,why:"Closing the fridge door quickly helps save energy."},
+  {e:"🔌",title:"Your phone is fully charged.",ko:"휴대전화 충전이 끝났어요.",q:"What is a good habit?",opts:["Leave the charger plugged in forever.","Plug in more chargers.","Unplug the charger when it is not needed."],a:2,why:"Unplug chargers and devices when they are not needed."}
+ ];
+ let i=0,err=0,answered=false;
+ function draw(){
+  const m=missions[i];
+  setMain(`${stepper(1,n)}<div style="padding:2.2cqw;background:linear-gradient(135deg,#fff0d5,#d9f1ff);color:#173b46;min-height:48cqw"><div style="max-width:900px;margin:auto"><div style="display:flex;align-items:center;gap:1.4cqw;flex-wrap:wrap"><div style="font-size:6cqw">🏠</div><div><div style="font-size:2.8cqw;font-weight:900">Energy-Saving Home Mission</div><div style="font-size:1.7cqw">우리 집에서 에너지를 아끼는 행동을 골라 봐요!</div></div></div><div style="height:.8cqw;background:#b7d9cf;border-radius:2cqw;margin:1.8cqw 0;overflow:hidden"><div style="height:.8cqw;width:${i/missions.length*100}%;background:#23966b;transition:width .2s"></div></div><div style="display:flex;justify-content:space-between;gap:1cqw;font-size:1.5cqw;font-weight:800"><span>HOME SCENARIO ${i+1} / ${missions.length}</span><span>⚡ SAVE ENERGY</span></div><div style="margin:1.2cqw 0;padding:2cqw;background:#fff;border:2px solid #e7d0ad;border-radius:1.8cqw;box-shadow:0 5px 0 #d8b17b"><div style="display:flex;align-items:center;gap:1.5cqw"><div style="font-size:5cqw">${m.e}</div><div><div style="font-size:2.3cqw;font-weight:900">${m.title}</div><div style="font-size:1.6cqw;color:#527078">${m.ko}</div></div></div><div style="font-size:2cqw;font-weight:900;margin-top:1.6cqw">${m.q}</div><div style="display:grid;grid-template-columns:1fr;gap:.8cqw;margin-top:1.2cqw" id="gropts">${m.opts.map((o,k)=>`<button class="opt" data-i="${k}" style="text-align:left;background:#fffaf2;border:2px solid #e7d0ad;color:#173b46;padding:1.2cqw 1.5cqw;font-size:1.8cqw;border-radius:1.2cqw">${["A","B","C"][k]}. ${o}</button>`).join("")}</div><div id="grmsg" style="font-size:1.6cqw;font-weight:700;min-height:2.5em;margin-top:1cqw"></div></div><div style="display:flex;justify-content:space-between;gap:1cqw;font-size:1.5cqw"><span>Small habits save energy.</span><span>🌱 DAILY ACTION</span></div></div></div>`);
+  document.querySelectorAll('#gropts button').forEach(b=>b.onclick=()=>{
+   if(answered)return;
+   const k=+b.dataset.i;
+   if(k!==m.a){err++;b.style.borderColor="#d85b55";b.style.background="#fff0ee";$('grmsg').textContent="Not quite. Think about how to avoid wasting energy at home. 다시 골라 봐요.";S.click();return;}
+   answered=true;S.ok();b.style.borderColor="#23966b";b.style.background="#e1f7e8";$('grmsg').textContent="✅ Good choice! "+m.why;
+   document.querySelectorAll('#gropts button').forEach(x=>x.disabled=true);
+   const next=document.createElement('button');next.className='btn g';next.style.marginTop='1cqw';next.textContent=i===missions.length-1?'집 에너지 미션 완료 ▶':'다음 상황 ▶';next.onclick=()=>{i++;answered=false;if(i<missions.length)draw();else finish();};$('grmsg').appendChild(document.createElement('br'));$('grmsg').appendChild(next);
+  });
+ }
+ function finish(){sk.act=err===0?3:err<=3?2:1;setMain(`${stepper(1,n)}<div class="scr" style="background:linear-gradient(135deg,#fff0d5,#d9f1ff);color:#173b46"><div style="font-size:7cqw">🏠⚡🌱</div><h2>Energy-Saving Home Mission Complete!</h2><div class="sub">집에서 실천할 수 있는 에너지 절약 행동을 배웠어요.</div><p style="font-size:2cqw">불 끄기, 냉장고 문 닫기, TV 끄기처럼 작은 습관이 전기 절약에 도움이 돼요.</p><p style="font-size:2cqw">활동 별점: ${"⭐".repeat(sk.act)} · 다시 고른 횟수: ${err}</p><button class="btn g" id="nx">확인 퀴즈 ▶</button></div>`);$('nx').onclick=()=>quizStage(n);}
+ draw();
+}
+
+/* --- 활동 2: 북극 해빙 데이터 실험 및 퀴즈 --- */
+function labIce(){
+ const n=2;
+ const qs=[
+  {q:"Why is Arctic sea ice melting?",ko:"북극 해빙이 녹는 이유는 무엇일까요?",o:["The Earth is getting warmer.","The Moon is getting closer.","The ocean has no salt."],a:0,why:"Global warming raises temperatures and melts sea ice."},
+  {q:"What do polar bears use sea ice for?",ko:"북극곰은 해빙을 무엇에 이용할까요?",o:["To hunt for food.","To build houses.","To grow plants."],a:0,why:"Polar bears use sea ice as a platform to hunt seals."},
+  {q:"What can happen when sea ice gets smaller?",ko:"해빙이 줄어들면 어떤 일이 생길까요?",o:["Polar bears may have trouble finding food.","Polar bears can fly to other places.","The ocean turns into a forest."],a:0,why:"Less sea ice makes it harder for polar bears to reach their prey."},
+  {q:"Which action can help slow global warming?",ko:"지구온난화를 늦추는 데 도움이 되는 행동은?",o:["Wasting electricity.","Using energy carefully.","Leaving every light on."],a:1,why:"Saving energy can reduce greenhouse gas emissions."},
+  {q:"What happens when large amounts of land ice melt into the ocean?",ko:"육지의 얼음이 많이 녹아 바다로 흘러가면?",o:["Sea level can rise.","Sea level always falls.","The ocean disappears."],a:0,why:"Meltwater from land ice adds water to the ocean and raises sea level."}
+ ];
+ let i=0,err=0,locked=false;
+ function draw(){
+  const q=qs[i], pct=Math.round(i/qs.length*100);
+  const iceW=24+i*13, bearX=15+i*12;
+  setMain(`${stepper(1,n)}<div style="padding:2cqw;background:linear-gradient(#0b2856,#287ab5 48%,#d6f4ff 49%,#9edaf0);color:#12344c;min-height:48cqw"><div style="max-width:1000px;margin:auto"><div style="display:flex;align-items:center;justify-content:space-between;gap:1cqw"><div><div style="font-size:1.7cqw;font-weight:900;color:#d6f4ff">ARCTIC RESCUE · QUESTION ${i+1}/${qs.length}</div><h2 style="font-size:3cqw;margin:.6cqw 0;color:white">Grow Nori's Ice Home!</h2><div style="font-size:1.7cqw;color:#e7f8ff">퀴즈를 맞힐 때마다 북극곰이 설 수 있는 얼음이 넓어져요.</div></div><div style="font-size:6cqw">🐻‍❄️</div></div><div style="height:.8cqw;background:#a4cce0;border-radius:2cqw;margin:1.5cqw 0;overflow:hidden"><div style="height:100%;width:${pct}%;background:#6ce0ce"></div></div><div style="height:17cqw;position:relative;overflow:hidden;border-radius:1.5cqw;background:linear-gradient(#8fd8f4 0%,#c8f2ff 60%,#3c9dc8 61%,#1475a6 100%);margin-bottom:1.3cqw;border:2px solid #b8e7f8"><div style="position:absolute;bottom:0;left:0;width:${iceW}%;height:${5+i*1.2}cqw;background:linear-gradient(135deg,#fff,#dff8ff);clip-path:polygon(0 18%,20% 0,40% 12%,58% 2%,80% 15%,100% 8%,100% 100%,0 100%);transition:width .6s,height .6s"></div><div style="position:absolute;left:${Math.min(iceW-7,bearX)}%;bottom:${4+i*1.2}cqw;font-size:5cqw;transition:left .6s,bottom .6s">🐻‍❄️</div><div style="position:absolute;right:2%;bottom:1cqw;font-size:2.4cqw">🧊 🧊</div><div style="position:absolute;left:2%;top:1cqw;color:#174a69;font-size:1.4cqw;font-weight:900">ICE HOME RESTORED: ${i}/${qs.length}</div></div><div style="padding:2cqw;background:#fff;border:2px solid #b8e7f8;border-radius:1.6cqw;box-shadow:0 5px 0 #7dbcd9;color:#173b46"><div style="font-size:2.3cqw;font-weight:900">${q.q}</div><div style="font-size:1.6cqw;color:#527078;margin:.5cqw 0 1.2cqw">${q.ko}</div><div id="iceopts" style="display:grid;gap:.8cqw">${q.o.map((o,k)=>`<button class="opt" data-i="${k}" style="text-align:left;background:#f4fbff;border:2px solid #c9e7f5;color:#173b46;padding:1.1cqw 1.4cqw;font-size:1.8cqw;border-radius:1cqw">${["A","B","C"][k]}. ${o}</button>`).join("")}</div><div id="icemsg" style="font-size:1.6cqw;font-weight:700;min-height:2.6em;margin-top:1cqw"></div></div></div></div>`);
+  document.querySelectorAll("#iceopts button").forEach(btn=>btn.onclick=()=>{
+   if(locked)return;const k=+btn.dataset.i;
+   if(k!==q.a){err++;S.click();btn.style.borderColor="#d85b55";$("icemsg").textContent="Try again! 지문에서 배운 내용을 떠올려 보세요.";return;}
+   locked=true;S.ok();btn.style.background="#e1f7e8";btn.style.borderColor="#23966b";$("icemsg").textContent="✅ "+q.why;
+   document.querySelectorAll("#iceopts button").forEach(x=>x.disabled=true);
+   const next=document.createElement("button");next.className="btn g";next.style.marginTop="1cqw";next.textContent=i===qs.length-1?"얼음 서식지 회복 완료 ▶":"다음 퀴즈 · 얼음 넓히기 ▶";
+   next.onclick=()=>{i++;locked=false;if(i<qs.length)draw();else finish();};
+   $("icemsg").appendChild(document.createElement("br"));$("icemsg").appendChild(next);
+  });
+ }
+ function finish(){sk.act=err===0?3:err<=3?2:1;clear(n,err);}
+ draw();
+}
+
+/* --- 활동 3: 바다 청소선 미니게임 --- */
+function labSea(){
+ const n=3;
+ setMain(`${stepper(1,n)}<div class="labg"><div><canvas id="cv" width="640" height="400" style="cursor:none;touch-action:none"></canvas></div><div class="panel glass" id="lp"></div></div>`);
+ const cv=$("cv"),x=cv.getContext("2d");
+ let boat={x:120,y:200},tgt={x:120,y:200},items=[],got=0,hearts=3,tick=0,over=0,goal=8,err=0;
+ const TR=[["🧴","plastic bottle"],["🥤","plastic cup"],["🛍️","plastic bag"],["🥫","can"],["🕸️","fishing net"]];
+ const pm=e=>{const r=cv.getBoundingClientRect();tgt={x:(e.clientX-r.left)*640/r.width,y:(e.clientY-r.top)*400/r.height};};
+ cv.onpointermove=pm;cv.onpointerdown=pm;
+ const keys={};
+ const kd=e=>{if(["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"].includes(e.key))e.preventDefault();keys[e.key]=1;};
+ const ku=e=>{keys[e.key]=0;};
+ window.addEventListener("keydown",kd);window.addEventListener("keyup",ku);
+ function panel(){
+  $("lp").innerHTML=`<h3>🚤 Ocean Cleanup! <small>(바다 청소선 출동)</small></h3>
+  <p>Move the boat, collect <b>${goal} pieces of trash</b>, and avoid the <b>dolphins 🐬</b>!<br><small>배를 움직여 쓰레기 ${goal}개를 줍고, 돌고래는 피하세요!</small></p>
+  <div style="display:flex;gap:1cqw;align-items:center"><span class="chip">🗑️ ${got}/${goal}</span><span class="chip">${"❤️".repeat(hearts)}${"🖤".repeat(3-hearts)}</span></div>
+  <div class="prog"><i style="width:${got/goal*100}%"></i></div>
+  <p style="font-size:1.5cqw;opacity:.8">마우스·손가락 또는 방향키로 배를 움직여요.</p>`;
+ }
+ function stop(){over=1;window.removeEventListener("keydown",kd);window.removeEventListener("keyup",ku);if(window.__seaRaf)cancelAnimationFrame(window.__seaRaf);}
+ function finish(){
+  stop();sk.act=hearts===3?3:hearts===2?2:1;
+  $("lp").innerHTML=`<h3>✅ Ocean Cleanup Complete!</h3>
+   <p style="font-size:1.6cqw">You collected ${goal} pieces of trash and protected the dolphins!<br><small>쓰레기를 모두 줍고 돌고래를 지켰어요!</small></p>
+   <p>활동 별점: ${"⭐".repeat(sk.act)}</p><button class="btn g" id="nx">보상 받기 ▶</button>`;
+  $("nx").onclick=()=>clear(n,err);
+ }
+ function fail(){
+  stop();
+  modal(`<h3>🐬 돌고래를 피하세요!</h3><p>쓰레기는 줍고 돌고래와 부딪히지 않도록 배를 움직여 보세요.</p><div style="text-align:right"><button class="btn g" onclick="labSea()">다시 도전 ▶</button></div>`);
+ }
+ function frame(){
+  if(over)return;
+  tick++;
+  if(keys.ArrowLeft)tgt.x-=5;if(keys.ArrowRight)tgt.x+=5;if(keys.ArrowUp)tgt.y-=5;if(keys.ArrowDown)tgt.y+=5;
+  tgt.x=Math.max(24,Math.min(616,tgt.x));tgt.y=Math.max(34,Math.min(366,tgt.y));
+  boat.x+=(tgt.x-boat.x)*.14;boat.y+=(tgt.y-boat.y)*.14;
+  const g=x.createLinearGradient(0,0,0,400);g.addColorStop(0,"#5fd0ff");g.addColorStop(1,"#0b5aa5");x.fillStyle=g;x.fillRect(0,0,640,400);
+  x.strokeStyle="#ffffff30";x.lineWidth=2;
+  for(let i=0;i<9;i++){x.beginPath();for(let k=0;k<=640;k+=16){const yy=i*46+14+Math.sin((k+tick*2+i*40)/36)*5;k?x.lineTo(k,yy):x.moveTo(k,yy);}x.stroke();}
+  if(tick%38===0){
+   if(Math.random()<.72){const t=TR[Math.floor(Math.random()*TR.length)];items.push({e:t[0],n:t[1],trash:1,x:660,y:40+Math.random()*320,v:1.1+Math.random()*1.1,p:Math.random()*6});}
+   else items.push({e:"🐬",trash:0,x:660,y:40+Math.random()*320,v:1.4+Math.random()*1,p:Math.random()*6});
+  }
+  x.font="30px serif";x.textAlign="center";x.textBaseline="middle";
+  items=items.filter(it=>{
+   it.x-=it.v;const yy=it.y+Math.sin(tick/30+it.p)*8;x.fillText(it.e,it.x,yy);
+   if(Math.hypot(it.x-boat.x,yy-boat.y)<30){
+    if(it.trash){got++;S.get();panel();if(got>=goal){finish();return false;}}
+    else{hearts--;S.bad();panel();if(hearts<=0){fail();return false;}}
+    return false;
+   }
+   return it.x>-30;
+  });
+  x.font="44px serif";x.fillText("🚤",boat.x,boat.y);x.textAlign="start";
+  if(!over)window.__seaRaf=requestAnimationFrame(frame);
+ }
+ panel();frame();
+}
+
+/* --- 각 구역 클리어 후 확인 퀴즈 --- */
+function quizStage(n){setMain(`${stepper(2,n)}<div class="scr" style="background:linear-gradient(#0e3a66,#0a2a4d)"><div style="width:14cqw;height:14cqw" class="float">${NORI("happy")}</div><div class="sub">마지막 관문! 퀴즈를 모두 맞히면 잠금이 풀려요.</div><button class="btn g" id="qs">퀴즈 시작 ▶</button></div>`);
+ $("qs").onclick=()=>{let i=0,err=0;const qs=quiz[n];(function d(){const q=qs[i];modal(`<h3>🔐 확인 퀴즈 ${i+1}/${qs.length}</h3><div class="prog"><i style="width:${i/qs.length*100}%"></i></div><div class="q">${q.q}</div><div class="opts" id="op"></div>`);
+  q.o.forEach((t,k)=>{const b=document.createElement("button");b.className="opt";b.textContent=q.o.length>2?`${"ABCD"[k]}. ${t}`:t;if(q.o.length===2)b.classList.add("c");b.onclick=()=>{if(k!==q.a){err++;shk();return fail("땡! 다시 생각해 봐요.");}S.ok();i++;if(i<qs.length){toast("✨ 정답!","good");d();}else{closeModal();clear(n,err);}};$("op").appendChild(b);});})();};}
+
+async function clear(n,qerr){const c=Store.get(me),stars=sk.seek+sk.act;await Store.save(me,{[`stage_${n}_quiz_passed`]:true,[`stage_${n}_completed`]:true,[`stage_${n}_score`]:Math.max(c[`stage_${n}_score`]||0,stars),[AREA[n].key]:true});hud();S.win();const A=AREA[n];
+ modal(`<h3>★ AREA CLEAR! ★</h3><div style="text-align:center;font-size:2.4cqw">탐색 ${"⭐".repeat(sk.seek)} · 활동 ${"⭐".repeat(sk.act)}</div><div class="bigic">${A.rw[0]}</div><div style="text-align:center;font-size:2.6cqw;font-weight:900">「${A.rw[1]}」 획득!</div><div style="text-align:center;font-size:1.9cqw">🌍 지구를 지키는 다음 미션으로 가 봐요!</div><div style="text-align:center;margin-top:1.4cqw"><button class="btn g" onclick="showMap()">지도로 ▶</button></div>`);}
+
+/* ===== 최종 미션: 분리배출로 지구 지키기 ===== */
+const BINS=[{id:"paper",ic:"📄",en:"Paper",ko:"종이"},{id:"plastic",ic:"♻️",en:"Plastic",ko:"플라스틱"},{id:"vinyl",ic:"🛍️",en:"Vinyl / Wrapper",ko:"비닐"},{id:"can",ic:"🥫",en:"Metal Can",ko:"캔·고철"},{id:"glass",ic:"🍾",en:"Glass",ko:"유리"},{id:"food",ic:"🍌",en:"Food Waste",ko:"음식물"},{id:"gen",ic:"🗑️",en:"General Waste",ko:"일반쓰레기"}];
+const ITEMS=[
+{e:"🧴",en:"Plastic bottle",ko:"페트병",c:"plastic",tip:"Empty it, rinse it, and take off the label.",tk:"내용물을 비우고 헹군 뒤 라벨을 떼요."},
+{e:"🥤",en:"Plastic cup",ko:"플라스틱 컵",c:"plastic",tip:"Rinse it out before recycling.",tk:"깨끗이 헹궈서 버려요."},
+{e:"🛍️",en:"Plastic bag",ko:"비닐봉지",c:"vinyl",tip:"Bags go in the vinyl bin. Shake out the dirt first.",tk:"이물질을 털어 비닐류로 버려요."},
+{e:"🍪",en:"Snack wrapper",ko:"과자 봉지",c:"vinyl",tip:"Shake out the crumbs. Wrappers go with vinyl.",tk:"부스러기를 털고 비닐류로 버려요."},
+{e:"🥫",en:"Tuna can",ko:"참치캔",c:"can",tip:"Empty and rinse it. Metal cans can be recycled again and again.",tk:"비우고 헹궈요. 캔은 몇 번이고 재활용돼요."},
+{e:"📦",en:"Cardboard box",ko:"택배 상자",c:"paper",tip:"Remove the tape and flatten it.",tk:"테이프를 떼고 납작하게 펴요."},
+{e:"📰",en:"Newspaper",ko:"신문지",c:"paper",tip:"Keep paper dry and tie it up.",tk:"젖지 않게 묶어서 배출해요."},
+{e:"🥛",en:"Milk carton",ko:"우유팩",c:"paper",tip:"Rinse it, open it, and flatten it. Cartons are best collected apart from other paper.",tk:"헹구고 펼쳐서 말려요."},
+{e:"🍾",en:"Glass bottle",ko:"유리병",c:"glass",tip:"Empty it and take off the cap.",tk:"비우고 뚜껑을 분리해요."},
+{e:"🍌",en:"Banana peel",ko:"바나나 껍질",c:"food",tip:"Fruit peels are food waste.",tk:"과일 껍질은 음식물 쓰레기예요."},
+{e:"🍗",en:"Chicken bones",ko:"닭뼈",c:"gen",tip:"Hard bones are general waste, not food waste!",tk:"단단한 뼈는 일반쓰레기예요!"},
+{e:"🍕",en:"Greasy pizza box",ko:"기름 묻은 피자 상자",c:"gen",tip:"Paper with food or grease cannot be recycled.",tk:"기름 묻은 종이는 재활용이 안 돼요."}];
+function pickSort(n){let o=[];BINS.forEach(b=>{const l=ITEMS.filter(x=>x.c===b.id);o.push(l[Math.floor(Math.random()*l.length)]);});const rest=shuf(ITEMS.filter(x=>!o.includes(x)));while(o.length<n)o.push(rest.shift());return shuf(o);}
+
+function finalEntry(){sortingMission();}
+function sortingMission(){
+ let pool=pickSort(6),i=0,err=0;
+ function drawSort(){
+  const it=pool[i];
+  setMain(`<div class="steps"><b>♻️ 지구 지킴이 분리배출 게임</b><span class="on">${i+1} / ${pool.length}</span></div><div style="padding:2.2cqw;background:linear-gradient(135deg,#dff7e8,#d9f1ff);color:#173b46;min-height:48cqw"><div style="max-width:900px;margin:auto"><div style="display:flex;justify-content:space-between;align-items:center"><h2 style="font-size:3.1cqw;margin:.4cqw 0">♻️ Sort It Right!</h2><span>🗑️ 분리수거 미션</span></div><div style="height:.8cqw;background:#b7d9cf;border-radius:2cqw;margin:1.4cqw 0;overflow:hidden"><div style="height:100%;width:${i/pool.length*100}%;background:#23966b"></div></div><div style="background:#fff;border:2px solid #c8e8d4;border-radius:1.6cqw;padding:2cqw;box-shadow:0 5px 0 #b6d9c4"><div style="text-align:center"><div style="font-size:7cqw">${it.e}</div><div style="font-size:2.4cqw;font-weight:900">${it.en}</div><div style="font-size:1.7cqw;color:#527078">${it.ko}</div><div style="font-size:1.9cqw;font-weight:900;margin:1.2cqw 0">Which bin does it go in?</div></div><div id="sortbins" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8cqw"></div><div id="sortmsg" style="font-size:1.6cqw;font-weight:700;min-height:3em;margin-top:1cqw"></div></div></div></div>`);
+  let done=false;
+  BINS.forEach(bin=>{
+   const btn=document.createElement("button");btn.className="opt c";btn.style.cssText="padding:1cqw;font-size:max(12px,1.6cqw);background:#f8fffb;border:2px solid #cfe7d7;color:#173b46";btn.innerHTML=`${bin.ic} ${bin.en}<br><small style="font-weight:400">${bin.ko}</small>`;
+   btn.onclick=()=>{
+    if(done)return;
+    if(bin.id!==it.c){err++;S.click();btn.style.borderColor="#d85b55";$("sortmsg").textContent="Not this bin. 다시 생각해 봐요.";return;}
+    done=true;S.ok();btn.style.background="#e1f7e8";btn.style.borderColor="#23966b";
+    $("sortmsg").innerHTML=`✅ ${bin.en}! ${it.tip}<br><small>${it.tk}</small>`;
+    const next=document.createElement("button");next.className="btn g";next.style.marginTop="1cqw";next.textContent=i===pool.length-1?"지구 지키기 완료 ▶":"다음 물건 ▶";
+    next.onclick=()=>{i++;if(i<pool.length)drawSort();else saveEarthEnding();};
+    $("sortmsg").appendChild(document.createElement("br"));$("sortmsg").appendChild(next);
+   };
+   $("sortbins").appendChild(btn);
+  });
+ }
+ drawSort();
+}
+
+async function saveEarthEnding(){
+ const d=Store.get(me);
+ await Store.save(me,{boss_defeated:true,boss_in_progress:false});
+ hud();
+ setMain(`<div class="scr end"><div style="font-size:16cqw" class="float">🌍</div><div class="ttl" style="font-size:8cqw">SAVE THE EARTH!</div><div class="jua" style="font-size:2.8cqw;color:#0d2745">작은 실천이 지구를 바꿔요! 💚</div>
+ <div class="glass" style="color:#0d2745;padding:1.6cqw 2.4cqw;font-size:max(12px,1.8cqw);line-height:1.7;max-width:70cqw;text-align:left;background:#ffffffcc"><b>📘 오늘 배운 핵심 내용</b><br>① Turn off lights and save energy (불필요한 전등 끄기)<br>② Global warming and melting Arctic ice (지구온난화와 북극 얼음 감소)<br>③ Reduce plastic pollution and protect marine life (플라스틱 오염 줄이고 해양생물 보호하기)<br>④ Sort waste and recycle correctly (올바른 분리배출과 재활용)</div>
+ <div class="chip" style="background:#fff;color:#0d2745;font-size:2cqw">🌱 지구 지킴이 미션 완료 · 총 ⭐ ${stars(d)}</div><button class="btn g" onclick="showMap()">지도로 돌아가기</button></div>`);
+ const sc=document.querySelector(".end");for(let i=0;i<18;i++){const c=document.createElement("span");c.className="confetti";c.textContent=["🎉","⭐","💚","♻️","🌍"][i%5];c.style.left=(i*5.7)%100+"%";c.style.animationDuration=3+i%4+"s";c.style.animationDelay=-(i%5)+"s";sc.appendChild(c);}S.win();
+}
+function genPuzzle(){const MATES=["🐟","🦭","🐧","🐋"];for(;;){const B=Array.from({length:12},(_,i)=>({i,col:i%4,row:Math.floor(i/4),big:Math.random()<.5,mate:MATES[Math.floor(Math.random()*4)]}));const t=Math.floor(Math.random()*12),side=c=>c.col<2?"왼쪽":"오른쪽";const cand=B.filter(b=>b.big===B[t].big&&b.mate===B[t].mate&&side(b)===side(B[t]));if(cand.length===1)return{B,t,side:side(B[t])};}}
+function findNori(T,st){const P=genPuzzle(),tgt=P.B[P.t];let tries=0,done=0;
+ const clues=[[1,"📏 크기 단서",`노리는 <b>${tgt.big?"큰":"작은"}</b> 빙산 뒤에 숨었어!`],[2,"🐾 동료 단서",`노리 옆에는 <b>${tgt.mate}</b>가 있어!`],[3,"🧭 방향 단서",`노리는 화면 <b>${P.side}</b> 절반에 있어!`]];
+ const ber=P.B.map(b=>`<button class="berg ${b.big?"":"sm"}" style="left:${14+b.col*24}%;top:${28+b.row*28}%" data-i="${b.i}" aria-label="빙산 ${b.i+1}"><svg viewBox="0 0 100 74"><polygon points="4,70 24,26 40,40 58,10 78,36 96,70" fill="#f4fbff" stroke="#9fd2ee" stroke-width="2" stroke-linejoin="round"/><polygon points="58,10 50,30 58,28 66,34" fill="#cfeaff"/><path d="M0 62Q25 56 50 62T100 62V74H0Z" fill="#2a86c2" opacity=".85"/></svg><span class="mate">${b.mate}</span></button>`).join("");
+ setMain(`<div class="steps"><b>🔍 마지막 추리 — 노리는 어느 빙산 뒤에?</b><span class="on">정화된 북극 (+${T.toFixed(2)}℃)</span></div><div class="fn"><div class="board"><svg viewBox="0 0 160 90" preserveAspectRatio="none"><defs><linearGradient id="f1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fd0ff"/><stop offset=".5" stop-color="#d9f2ff"/><stop offset=".5" stop-color="#3f9ad6"/><stop offset="1" stop-color="#0b4f92"/></linearGradient></defs><rect width="160" height="90" fill="url(#f1)"/><g fill="#fff" opacity=".6"><circle cx="20" cy="14" r="6"/><circle cx="28" cy="16" r="5"/><circle cx="120" cy="10" r="6"/></g></svg>${ber}<div class="mnori" style="top:2cqw;bottom:auto"><div class="av">${NORI("happy")}</div><div class="bub">단서 카드 3장을 모두 만족하는 빙산을 클릭해! <span id="tr"></span></div></div></div><div class="cards">${clues.map(c=>`<div class="cc"><b>${c[1]}</b> (AREA ${c[0]})<br>${c[2]}</div>`).join("")}</div></div>`,"");
+ document.querySelectorAll(".berg").forEach(b=>b.onclick=()=>{if(done)return;const i=+b.dataset.i;if(i===P.t){done=1;S.win();b.innerHTML=`<div class="ob reveal" style="left:50%;top:50%;width:90%;height:90%">${NORI("happy")}</div>`;timers.push(setTimeout(()=>ending(T,st,tries),1300));}else{tries++;fail(`여기엔 ${P.B[i].mate}만 있어... 단서를 다시 확인!`);b.disabled=true;b.style.opacity=.4;$("tr").textContent=`(시도 ${tries})`}});}
+async function ending(T,st,tries){await Store.save(me,{boss_defeated:true,boss_in_progress:false});hud();const d=Store.get(me);
+ setMain(`<div class="scr end"><div style="width:20cqw;height:20cqw" class="float">${NORI("happy")}</div><div class="ttl" style="font-size:8cqw">SAVE THE EARTH!</div><div class="jua" style="font-size:2.8cqw;color:#0d2745">"고마워! 이제 나도 지구를 지킬 거야!" 🌍💙</div>
+ <div class="glass" style="color:#0d2745;padding:1.6cqw 2.4cqw;font-size:max(12px,1.8cqw);line-height:1.7;max-width:70cqw;text-align:left;background:#ffffffcc"><b>📘 오늘 배운 핵심 영어 표현 & 내용</b><br>① Global warming & greenhouse gases (지구온난화와 온실가스)<br>② Arctic ice melting & polar bears (북극 해빙 감소와 북극곰)<br>③ Plastic pollution, microplastics & marine life (플라스틱 오염과 해양생물)<br>④ Renewable energy & recycling habits (재생에너지와 분리배출 습관)</div>
+ <div class="chip" style="background:#fff;color:#0d2745;font-size:2cqw">2050년 +${T.toFixed(2)}℃ ${"⭐".repeat(st)} · 추리 시도 ${tries+1}회 · 총 ⭐ ${stars(d)}</div><button class="btn g" onclick="showMap()">지도로 돌아가기</button></div>`);
+ const sc=document.querySelector(".end");for(let i=0;i<18;i++){const c=document.createElement("span");c.className="confetti";c.textContent=["🎉","⭐","💙","❄️","🌍"][i%5];c.style.left=(i*5.7)%100+"%";c.style.animationDuration=3+i%4+"s";c.style.animationDelay=-(i%5)+"s";sc.appendChild(c);}S.win();}
+
+/* ===== 교사용 센터 ===== */
+function toggleTeacher(){const t=$("teacher").classList.toggle("hidden");$("game").classList.toggle("hidden",!t);$("tbtn").textContent=t?"👩‍🏫 교사용":"🎮 게임으로";if(!t){clearAll();renderT();}}
+function renderT(){const g=$("tg");g.innerHTML="";let l=0,c=0;for(let i=1;i<=99;i++){const d=Store.get(i);if(d.logged_in)l++;if(d.boss_defeated)c++;
+ const e=document.createElement("div");e.className="tc"+(d.boss_defeated?" w":"");e.innerHTML=`<b>${i}번</b> ${d.logged_in?"●":"○"}<br>${[1,2,3].map(k=>`<span class="dt ${d[`stage_${k}_completed`]?"d":""}">A${k}${d[`stage_${k}_completed`]?" "+d[`stage_${k}_score`]+"★":""}</span>`).join("")}<br>${d.boss_defeated?"🏆 지구 지킴이 완료":d.boss_available?"🔥 최종 도전 가능":"탐험 중"}`;g.appendChild(e);}
+ $("tsum").textContent=`접속 ${l}명 · 지구 지킴이 완료 ${c}명 / 99명 (별: 구역당 최대 6★)`;$("tstore").textContent=Store.mode==="shared"?"모든 기기의 진행이 공유됩니다.":"공유 서버가 없어 이 브라우저 안에서만 저장·집계됩니다.";}
+async function resetAll(){if(!confirm("모든 학생 진행 데이터를 초기화할까요? 되돌릴 수 없습니다."))return;await Store.reset();renderT();}
+
+showPre();Store.init();
+</script></body></html>
